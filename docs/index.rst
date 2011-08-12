@@ -44,9 +44,18 @@ Using
 
 When this utility is configured into a Pyramid application, whenever a
 request to your application causes an exception to be raised, it will log the
-exception to a Python :term:`logger`.  The logger name it logs to is
+exception to a Python :term:`logger`.
+
+By default, the exception logging machinery will log all exceptions (even
+those eventually caught by a Pyramid :term:`exception view`) except "http
+exceptions" (any exception that derives from the base class
+``pyramid.httpexceptions.WSGIHTTPException`` such as ``HTTPFound``).  You can
+instruct ``pyramid_exclog`` to ignore custom exception types by using the
+``excview.ignore`` configuration setting, described below.
+
+The Python logger name which ``pyramid_exclog`` logs to is named
 ``exc_logger``.  You can use the logging configuration in your Pyramid
-application's ``.ini`` file to change the ``excview`` logger to be of a
+application's ``.ini`` file to change the ``exc_logger`` logger to be of a
 specific kind, meaning you can log to a file, to syslog, or to email, and
 other locations.  For example, the following configuration sends
 ``pyramid_exclog`` exception logging info to a file (in the current
@@ -105,23 +114,20 @@ configuration of your application.  For information about the logging file
 configuration format, see
 http://docs.python.org/release/2.5.2/lib/logging-config-fileformat.html .
 
-However, :mod:`pyramid_exclog`` also has some of its own knobs in the form
-of configuration settings which are meant to be placed in the application
+However, :mod:`pyramid_exclog`` also has some its own knobs in the form of
+configuration settings which are meant to be placed in the application
 section of your Pyramid's ``.ini`` file.  These are:
-
-``exclog.catchall``
-
-   If this value is ``true``, catch and report all errors, even those that
-   might later be caught by a Pyramid exception view.  Otherwise, only
-   exceptions that are not caught by a Pyramid exception view are logged.
-   This setting defaults to ``false``.
 
 ``exclog.ignore``
 
     A list of dotted Python names representing exception types
     (e.g. ``myapp.MyException``) or builtin exception names (e.g.
     ``NotImplementedError`` or ``KeyError``) that represent exceptions which
-    should not ever be logged.  This setting defaults to the empty list.
+    should not ever be logged.  This setting defaults to a list containing
+    only ``pyramid.httpexceptions.WSGIHTTPException``.  This list can be in
+    the form of a whitespace-separated string, e.g. ``KeyError ValueError
+    myapp.MyException`` or it may consume multiple lines in the ``.ini``
+    file.
 
 Explicit "Tween" Configuration
 ------------------------------
@@ -138,6 +144,9 @@ tween chain is incorrect (see the output of ``paster ptweens``)::
 It usually belongs directly above the "MAIN" entry in the ``paster ptweens``
 output, and will attempt to sort there by default as the result of having
 ``include('pyramid_exclog')`` invoked.
+
+Putting it above the ``pyramid.tweens.excview_tween_factory`` will cause it
+to log only exceptions that are not caught by an exception view.
 
 More Information
 ----------------
