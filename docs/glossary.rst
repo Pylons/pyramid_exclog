@@ -21,3 +21,12 @@ Glossary
      access to the Pyramid application registry as well as the Pyramid
      rendering machinery.  See the main Pyramid documentation for more
      information about tweens.
+
+   Exception view
+      An exception view is a :Pyramid view callable which may be invoked when
+      an exception is raised during request processing.
+
+   Logger
+      A Python "standard library" ``logging`` module logger.  See
+      http://docs.python.org/library/logging.html for more information about
+      Python standard library logging.
