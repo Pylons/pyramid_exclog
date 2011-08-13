@@ -1,8 +1,12 @@
 ``pyramid_exclog``
 ===================
 
-A package which logs exception information when an error occurs in your
-Pyramid application.  See the documentation at
+A package which logs Pyramid application exception (error) information to a
+standard Python logger.  This add-on is most useful when used in production
+applications, because the logger can be configured to log to a file, to UNIX
+syslog, to the Windows Event Log, or even to email.
+
+See the documentation at
 https://docs.pylonsproject.org/projects/pyramid_exclog/dev/ for more
 information.
 
