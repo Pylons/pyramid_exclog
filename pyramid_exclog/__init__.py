@@ -32,7 +32,7 @@ def exclog_tween_factory(handler, registry):
         except ignored:
             raise
         except:
-            logger = getLogger('exc_logger')
+            logger = getLogger('pyramid_exclog')
             logger.exception(request.url)
             raise
 
