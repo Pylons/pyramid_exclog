@@ -54,10 +54,10 @@ instruct ``pyramid_exclog`` to ignore custom exception types by using the
 ``excview.ignore`` configuration setting, described below.
 
 The Python logger name which ``pyramid_exclog`` logs to is named
-``pyramid_exclog``.  You can use the logging configuration in your Pyramid
-application's ``.ini`` file to change the ``pyramid_exclog`` logger to be of
-a specific kind, meaning you can log to a file, to syslog, or to email, and
-other locations.  For example, the following configuration sends
+``exc_logger``.  You can use the logging configuration in your Pyramid
+application's ``.ini`` file to change the ``exc_logger`` logger to send to a
+particular handler, meaning you can log to a file, to syslog, or to email,
+and other locations.  For example, the following configuration sends
 ``pyramid_exclog`` exception logging info to a file (in the current
 directory) named ``exceptions.log``:
 
@@ -67,7 +67,7 @@ directory) named ``exceptions.log``:
    # Begin logging configuration
 
    [loggers]
-   keys = root, pyramid_exclog
+   keys = root, exc_logger
 
    [handlers]
    keys = console, exc_handler
@@ -79,10 +79,10 @@ directory) named ``exceptions.log``:
    level = INFO
    handlers = console
 
-   [logger_pyramid_exclog]
+   [logger_exc_logger]
    level = ERROR
    handlers = exc_handler
-   qualname = pyramid_exclog
+   qualname = exc_logger
 
    [handler_console]
    class = StreamHandler

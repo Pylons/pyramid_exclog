@@ -1,7 +1,7 @@
 Next release
 ------------
 
-- Change the exception logger name to ``pyramid_exclog``.
+- ...
 
 0.1 (2011-08-11)
 ----------------
