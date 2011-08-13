@@ -65,23 +65,22 @@ class Test_includeme(unittest.TestCase):
 
     def test_it(self):
         from pyramid.httpexceptions import WSGIHTTPException
-        from pyramid_exclog import exclog_tween_factory
         from pyramid.tweens import EXCVIEW
         config = DummyConfig()
         self._callFUT(config)
         self.assertEqual(config.tweens,
-                         [(exclog_tween_factory, 'exclog', EXCVIEW, None)])
+             [('pyramid_exclog.exclog_tween_factory', 'exclog', EXCVIEW, None)])
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (WSGIHTTPException,))
 
     def test_it_catchall(self):
-        from pyramid_exclog import exclog_tween_factory
         from pyramid.tweens import EXCVIEW
         config = DummyConfig()
         config.settings['exclog.catchall'] = 'true'
         self._callFUT(config)
         self.assertEqual(config.tweens,
-                         [(exclog_tween_factory, 'exclog', EXCVIEW, None)])
+                   [('pyramid_exclog.exclog_tween_factory', 'exclog', EXCVIEW,
+                     None)])
 
     def test_it_withignored_builtin(self):
         config = DummyConfig()
