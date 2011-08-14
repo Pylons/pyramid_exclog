@@ -1,5 +1,5 @@
-Next release
-------------
+0.2 (2011-08-13)
+----------------
 
 - Improve documentation by providing examples of logging to file, email and
   by describing deltas to default Pyramid 1.2 logging config.
