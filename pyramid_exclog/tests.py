@@ -69,7 +69,7 @@ class Test_includeme(unittest.TestCase):
         config = DummyConfig()
         self._callFUT(config)
         self.assertEqual(config.tweens,
-             [('pyramid_exclog.exclog_tween_factory', 'exclog', EXCVIEW, None)])
+             [('pyramid_exclog.exclog_tween_factory', EXCVIEW, None)])
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (WSGIHTTPException,))
 
@@ -79,7 +79,7 @@ class Test_includeme(unittest.TestCase):
         config.settings['exclog.catchall'] = 'true'
         self._callFUT(config)
         self.assertEqual(config.tweens,
-                   [('pyramid_exclog.exclog_tween_factory', 'exclog', EXCVIEW,
+                   [('pyramid_exclog.exclog_tween_factory', EXCVIEW,
                      None)])
 
     def test_it_withignored_builtin(self):
@@ -112,6 +112,6 @@ class DummyConfig(object):
         self.registry = self
         self.settings = {}
 
-    def add_tween(self, factory, alias=None, under=None, over=None):
-        self.tweens.append((factory, alias, under, over))
+    def add_tween(self, factory, under=None, over=None):
+        self.tweens.append((factory, under, over))
 

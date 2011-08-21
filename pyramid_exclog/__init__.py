@@ -55,5 +55,4 @@ def includeme(config):
     ignored = as_globals_list(get('exclog.ignore',
                                   'pyramid.httpexceptions.WSGIHTTPException'))
     config.registry.settings['exclog.ignore'] = tuple(ignored)
-    config.add_tween('pyramid_exclog.exclog_tween_factory',
-                     alias='exclog', under=EXCVIEW)
+    config.add_tween('pyramid_exclog.exclog_tween_factory', under=EXCVIEW)
