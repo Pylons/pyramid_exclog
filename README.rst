@@ -10,6 +10,4 @@ See the documentation at
 https://docs.pylonsproject.org/projects/pyramid_exclog/dev/ for more
 information.
 
-This package currently will not work with any released Pyramid; it requires
-the Pyramid trunk (aka "1.2dev"), available from
-https://github.com/Pylons/pyramid .
+This package will only work with Pyramid 1.2a1 and better.

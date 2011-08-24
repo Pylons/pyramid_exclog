@@ -9,8 +9,7 @@ standard Python :term:`logger`.  This add-on is most useful when used in
 production applications, because the logger can be configured to log to a
 file, to UNIX syslog, to the Windows Event Log, or even to email.
 
-.. warning:: This package currently will not work with any released Pyramid;
-   it requires the Pyramid trunk (aka "1.2dev").
+.. warning:: This package will only work with Pyramid 1.2a1 and better.
 
 Installation
 ------------
