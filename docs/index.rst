@@ -221,7 +221,7 @@ Exception``:
    formatter = generic
 
    [handler_exc_handler]
-   class = SMTPHandler
+   class = logging.handlers.SMTPHandler
    args = (('localhost', 25), 'from@example.com', ['to@example.com'], 'myapp Exception')
    level = ERROR
    formatter = exc_formatter
