@@ -304,7 +304,7 @@ Deployment under mod_wsgi
 -------------------------
 
 To make logging facilities available when loading an application via 
-mod_wsgi, like it behave with paster, you must call the logging.fileConfig 
+mod_wsgi, like it behaves with paster, you must call the logging.fileConfig 
 function on the ini file containing the logger entry. logging.fileConfig 
 reads the logging configuration from a ConfigParser file.
 
