@@ -221,7 +221,7 @@ Exception``:
    formatter = generic
 
    [handler_exc_handler]
-   class = logging.handlers.SMTPHandler
+   class = handlers.SMTPHandler
    args = (('localhost', 25), 'from@example.com', ['to@example.com'], 'myapp Exception')
    level = ERROR
    formatter = exc_formatter
@@ -299,6 +299,26 @@ output, and will attempt to sort there by default as the result of having
 
 Putting it above the ``pyramid.tweens.excview_tween_factory`` will cause it
 to log only exceptions that are not caught by an exception view.
+
+Deployment under mod_wsgi
+-------------------------
+
+To make logging facilities available when loading an application via 
+mod_wsgi, like it behave with paster, you must call the logging.fileConfig 
+function on the ini file containing the logger entry. logging.fileConfig 
+reads the logging configuration from a ConfigParser file.
+
+.. code-block:: python
+
+    import os
+    from pyramid.paster import get_app
+    from paste.script.util.logging_config import fileConfig
+    
+    here = os.path.dirname(os.path.abspath(__file__))
+    conf = os.path.join(here, 'production.ini')
+    fileConfig(conf)
+    
+    application = get_app(conf, 'main')
 
 More Information
 ----------------
