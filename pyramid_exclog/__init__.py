@@ -4,17 +4,21 @@ from pyramid.tweens import EXCVIEW
 from pyramid.settings import aslist
 from pyramid.util import DottedNameResolver
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.compat import PY3
 
 resolver = DottedNameResolver(None)
 
-import __builtin__
+try:
+    import builtins
+except ImportError: # pragma: no cover
+    import __builtin__ as builtins
 
 def as_globals_list(value):
     L = []
     value = aslist(value)
     for dottedname in value:
-        if dottedname in __builtin__.__dict__:
-            dottedname = '__builtin__.%s' % dottedname
+        if dottedname in builtins.__dict__:
+            dottedname = 'builtins.%s' % dottedname
         obj = resolver.resolve(dottedname)
         L.append(obj)
     return L
