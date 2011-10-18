@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from pyramid.tweens import EXCVIEW
 from pyramid.settings import aslist
@@ -7,14 +8,22 @@ from pyramid.httpexceptions import WSGIHTTPException
 
 resolver = DottedNameResolver(None)
 
-import __builtin__
+PY3 = sys.version_info[0] == 3
+
+if PY3: # pragma: no cover
+    import builtins
+else: 
+    import __builtin__ as builtins
 
 def as_globals_list(value):
     L = []
     value = aslist(value)
     for dottedname in value:
-        if dottedname in __builtin__.__dict__:
-            dottedname = '__builtin__.%s' % dottedname
+        if dottedname in builtins.__dict__:
+            if PY3: # pragma: no cover
+                dottedname = 'builtins.%s' % dottedname
+            else:
+                dottedname = '__builtin__.%s' % dottedname
         obj = resolver.resolve(dottedname)
         L.append(obj)
     return L
