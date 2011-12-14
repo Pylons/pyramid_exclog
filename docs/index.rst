@@ -6,8 +6,8 @@ Overview
 
 A package which logs Pyramid application exception (error) information to a
 standard Python :term:`logger`.  This add-on is most useful when used in
-production applications, because the logger can be configured to log to a
-file, to UNIX syslog, to the Windows Event Log, or even to email.
+production applications because the logger can be configured to log to a
+file, UNIX syslog, the Windows Event Log, or even to email.
 
 .. warning:: This package will only work with Pyramid 1.2a1 and better.
 
@@ -237,7 +237,7 @@ Exception``:
 When the above configuration is used, exceptions will be sent via email
 instead of sent to a file.
 
-For information about logging in general see the `Pythong logging module
+For information about logging in general see the `Python logging module
 documentation <http://docs.python.org/library/logging.html>`_.  Practical
 tips are contained within the `Python logging cookbook
 <http://docs.python.org/howto/logging-cookbook.html#logging-cookbook>`_.
