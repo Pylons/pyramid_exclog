@@ -281,6 +281,26 @@ section of your Pyramid's ``.ini`` file.  These are:
                       KeyError
                       myapp.exceptions.MyException
 
+``exclog.extra_info``
+
+   By default the only content in error messages is the URL that was
+   accessed (retrieved from the url attribute of ``pyramid.request.Request``)
+   and the exception information that is appended by Python's
+   ``Logger.exception`` function.
+
+   If ``exclog.extra_info`` is true the error message will also include
+   the environ and params attributes of ``pyramid.request.Request`` formatted
+   using ``pprint.pformat``.
+
+  This setting defaults to false
+
+   An example:
+
+   .. code-block:: python
+
+      [app:myapp]
+      exclog.extra_info = true
+
 Explicit "Tween" Configuration
 ------------------------------
 
