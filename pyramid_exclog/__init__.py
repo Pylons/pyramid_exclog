@@ -1,5 +1,7 @@
 import logging
 import sys
+from pprint import pformat
+from textwrap import dedent
 
 from pyramid.tweens import EXCVIEW
 from pyramid.settings import aslist
@@ -42,7 +44,28 @@ def exclog_tween_factory(handler, registry):
             raise
         except:
             logger = getLogger('exc_logger')
-            logger.exception(request.url)
+            
+            
+            if get('exclog.extra_info', False):
+                message = dedent("""\n
+                {url}
+                
+                ENVIRONMENT
+                
+                {env}
+                
+                
+                PARAMETERS
+                
+                {params}
+                
+                
+                """).format(url=request.url,
+                            env=pformat(request.environ),
+                            params=pformat(request.params))
+            else:
+                message = request.url
+            logger.exception(message)
             raise
 
     return exclog_tween
