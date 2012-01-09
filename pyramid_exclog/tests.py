@@ -103,6 +103,12 @@ class Test_includeme(unittest.TestCase):
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (DummyException,))
 
+    def test_it_with_extra_info(self):
+        config = DummyConfig()
+        config.settings['exclog.extra_info'] = 'true'
+        self._callFUT(config)
+        self.assertEqual(config.registry.settings['exclog.extra_info'], True)
+
 class DummyException(object):
     pass
 

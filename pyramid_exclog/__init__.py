@@ -5,6 +5,7 @@ from textwrap import dedent
 
 from pyramid.tweens import EXCVIEW
 from pyramid.settings import aslist
+from pyramid.settings import asbool
 from pyramid.util import DottedNameResolver
 from pyramid.httpexceptions import WSGIHTTPException
 
@@ -35,6 +36,7 @@ def exclog_tween_factory(handler, registry):
     get = registry.settings.get
 
     ignored = get('exclog.ignore', (WSGIHTTPException,))
+    extra_info = get('exclog.extra_info', False)
 
     def exclog_tween(request, getLogger=logging.getLogger):
         # getLogger injected for testing purposes
@@ -46,23 +48,23 @@ def exclog_tween_factory(handler, registry):
             logger = getLogger('exc_logger')
             
             
-            if get('exclog.extra_info', False):
+            if extra_info:
                 message = dedent("""\n
-                {url}
+                %(url)s
                 
                 ENVIRONMENT
                 
-                {env}
+                %(env)s
                 
                 
                 PARAMETERS
                 
-                {params}
+                $(params)s
                 
                 
-                """).format(url=request.url,
-                            env=pformat(request.environ),
-                            params=pformat(request.params))
+                """ % dict(url=request.url,
+                           env=pformat(request.environ),
+                           params=pformat(request.params)))
             else:
                 message = request.url
             logger.exception(message)
@@ -86,5 +88,7 @@ def includeme(config):
     get = config.registry.settings.get
     ignored = as_globals_list(get('exclog.ignore',
                                   'pyramid.httpexceptions.WSGIHTTPException'))
+    extra_info = asbool(get('exclog.extra_info', False))
     config.registry.settings['exclog.ignore'] = tuple(ignored)
+    config.registry.settings['exclog.extra_info'] = extra_info
     config.add_tween('pyramid_exclog.exclog_tween_factory', under=EXCVIEW)

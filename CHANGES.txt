@@ -1,3 +1,9 @@
+Next release
+------------
+
+- Add an ``exclog.extra_info`` setting to the exclog configuration.  If it's
+  true, send WSGI environment and params info in the log message.
+
 0.5 (2011-09-27)
 ----------------
 
