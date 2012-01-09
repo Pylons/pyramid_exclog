@@ -58,6 +58,13 @@ class Test_exclog_tween(unittest.TestCase):
         msg = self.logger.exceptions[0]
         self.assertEqual(msg, self.request.url)
 
+    def test_extra_info(self):
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT)
+        self.assertEqual(len(self.logger.exceptions), 1)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('ENVIRONMENT' in msg)
+        
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
