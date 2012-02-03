@@ -59,7 +59,7 @@ def exclog_tween_factory(handler, registry):
                 
                 PARAMETERS
                 
-                $(params)s
+                %(params)s
                 
                 
                 """ % dict(url=request.url,
