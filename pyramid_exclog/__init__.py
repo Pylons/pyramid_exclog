@@ -1,4 +1,3 @@
-import logging
 import sys
 from pprint import pformat
 from textwrap import dedent
