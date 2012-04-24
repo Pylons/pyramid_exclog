@@ -1,4 +1,3 @@
-import logging
 import sys
 from pprint import pformat
 from textwrap import dedent
@@ -37,8 +36,10 @@ def exclog_tween_factory(handler, registry):
 
     ignored = get('exclog.ignore', (WSGIHTTPException,))
     extra_info = get('exclog.extra_info', False)
+    getLogger = get('exclog.getLogger', 'logging.getLogger')
+    getLogger = resolver.resolve(getLogger)
 
-    def exclog_tween(request, getLogger=logging.getLogger):
+    def exclog_tween(request, getLogger=getLogger):
         # getLogger injected for testing purposes
         try:
             return handler(request)
