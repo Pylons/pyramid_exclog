@@ -332,12 +332,11 @@ Here's an example of a run.wsgi file:
 .. code-block:: python
 
     import os
-    from pyramid.paster import get_app
-    from paste.script.util.logging_config import fileConfig
+    from pyramid.paster import get_app, setup_logging
     
     here = os.path.dirname(os.path.abspath(__file__))
     conf = os.path.join(here, 'production.ini')
-    fileConfig(conf)
+    setup_logging(conf)
     
     application = get_app(conf, 'main')
 
