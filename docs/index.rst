@@ -306,14 +306,14 @@ Explicit "Tween" Configuration
 
 Note that the exception logger is implemented as a Pyramid :term:`tween`, and
 it can be used in the explicit tween chain if its implicit position in the
-tween chain is incorrect (see the output of ``paster ptweens``)::
+tween chain is incorrect (see the output of ``ptweens``)::
 
    [app:myapp]
    pyramid.tweens = someothertween
                     pyramid.tweens.excview_tween_factory
                     pyramid_exclog.exclog_tween_factory
 
-It usually belongs directly above the "MAIN" entry in the ``paster ptweens``
+It usually belongs directly above the "MAIN" entry in the ``ptweens``
 output, and will attempt to sort there by default as the result of having
 ``include('pyramid_exclog')`` invoked.
 
@@ -323,8 +323,8 @@ to log only exceptions that are not caught by an exception view.
 Deployment under mod_wsgi
 -------------------------
 
-To make logging facilities available when loading an application via 
-mod_wsgi, like it behaves with paster, you must call the logging.fileConfig 
+To make logging facilities available when loading an application via
+mod_wsgi, like it behaves with pserve, you must call the logging.fileConfig
 function on the ini file containing the logger entry.
 
 Here's an example of a run.wsgi file:
