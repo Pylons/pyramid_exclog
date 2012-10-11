@@ -27,8 +27,18 @@ install_requires = [
     'pyramid>=1.2dev',
     ]
 
+testing_extras = [
+    'nose',
+    'coverage',
+    ]
+
+docs_extras = [
+    'Sphinx',
+    'docutils',
+    ]
+
 setup(name='pyramid_exclog',
-      version='0.6',
+      version='0.7dev',
       description=('A package which logs to a Python logger when an '
                    'exception is raised by a Pyramid application'),
       long_description=README + '\n\n' + CHANGES,
@@ -53,7 +63,10 @@ setup(name='pyramid_exclog',
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
-      tests_require=install_requires,
+      extras_require = {
+          'testing':testing_extras,
+          'docs':docs_extras,
+          },
       test_suite="pyramid_exclog",
       entry_points='',
       )

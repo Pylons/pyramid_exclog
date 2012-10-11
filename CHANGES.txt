@@ -1,3 +1,11 @@
+Next release
+------------
+
+- Changed testing regime to allow ``setup.py dev``.
+
+- We no longer test under Python 2.5 (although it's not explicitly broken
+  under 2.5).
+
 0.6 (2012-03-24)
 ----------------
 
