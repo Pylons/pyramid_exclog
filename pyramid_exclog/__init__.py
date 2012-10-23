@@ -7,6 +7,7 @@ from pyramid.settings import aslist
 from pyramid.settings import asbool
 from pyramid.util import DottedNameResolver
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.security import unauthenticated_userid
 
 resolver = DottedNameResolver(None)
 
@@ -14,7 +15,7 @@ PY3 = sys.version_info[0] == 3
 
 if PY3: # pragma: no cover
     import builtins
-else: 
+else:
     import __builtin__ as builtins
 
 def as_globals_list(value):
@@ -47,8 +48,8 @@ def exclog_tween_factory(handler, registry):
             raise
         except:
             logger = getLogger('exc_logger')
-            
-            
+            unauth = unauthenticated_userid(request)
+
             if extra_info:
                 message = dedent("""\n
                 %(url)s
@@ -61,13 +62,20 @@ def exclog_tween_factory(handler, registry):
                 PARAMETERS
                 
                 %(params)s
+               
+               
+                UNAUTHENTICATED USER
                 
-                
+                %(usr)s
+
                 """ % dict(url=request.url,
                            env=pformat(request.environ),
-                           params=pformat(request.params)))
+                           params=pformat(request.params),
+                           usr=str(unauth)))
+
             else:
                 message = request.url
+
             logger.exception(message)
             raise
 
