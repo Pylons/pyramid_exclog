@@ -100,3 +100,4 @@ Contributors
 - Chris McDonough, 2011/08/11
 - Jason McKellar, 2012/01/09
 - Rob Miller, 2012/04/24
+- Bruk Habtu, 2012/11/23
