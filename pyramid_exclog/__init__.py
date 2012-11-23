@@ -51,7 +51,7 @@ def exclog_tween_factory(handler, registry):
             unauth = unauthenticated_userid(request)
 
             if extra_info:
-                message = dedent("""\n
+                message = dedent("""\
                 %(url)s
                 
                 ENVIRONMENT
@@ -68,10 +68,10 @@ def exclog_tween_factory(handler, registry):
                 
                 %(usr)s
 
-                """ % dict(url=request.url,
+                """) % dict(url=request.url,
                            env=pformat(request.environ),
                            params=pformat(request.params),
-                           usr=str(unauth)))
+                           usr=unauth if unauth else '')
 
             else:
                 message = request.url
