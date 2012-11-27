@@ -13,6 +13,9 @@ Next release
 - We no longer test under Python 2.5 (although it's not explicitly broken
   under 2.5).
 
+- Do not error if the URL, query string or post data contains unexpected
+  encodings.
+
 0.6 (2012-03-24)
 ----------------
 

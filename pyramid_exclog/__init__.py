@@ -48,39 +48,57 @@ def exclog_tween_factory(handler, registry):
         except ignored:
             raise
         except:
+            # save the traceback as it may get lost when we try decode
+            exc_info = sys.exc_info()
+
             logger = getLogger('exc_logger')
             unauth = unauthenticated_userid(request)
  
             if get_message:
                 message = get_message(request)
-            elif extra_info:
-                message = dedent("""\n
-                %(url)s
-                
-                ENVIRONMENT
-                
-                %(env)s
-                
-                
-                PARAMETERS
-                
-                %(params)s
-               
-               
-                UNAUTHENTICATED USER
-                
-                %(usr)s
-
-                """) % dict(url=request.url,
-                           env=pformat(request.environ),
-                           params=pformat(request.params),
-                           usr=unauth if unauth else '')
-
             else:
-                message = request.url
+                try:
+                    url = request.url
+                except UnicodeDecodeError:
+                    # do the best we can
+                    url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
+                    qs = request.environ.get('QUERY_STRING')
+                    if qs:
+                        url += '?' + qs
+                    url = 'could not decode: %r' % url
 
-            logger.exception(message)
-            raise
+                if extra_info:
+                    try:
+                        params = request.params
+                    except UnicodeDecodeError:
+                        params = 'could not decode params'
+
+                    message = dedent("""\n
+                    %(url)s
+
+                    ENVIRONMENT
+
+                    %(env)s
+
+
+                    PARAMETERS
+
+                    %(params)s
+
+
+                    UNAUTHENTICATED USER
+
+                    %(usr)s
+
+                    """ % dict(url=url,
+                               env=pformat(request.environ),
+                               params=pformat(params),
+                               usr=unauth if unauth else ''))
+                else:
+                    message = url
+            logger.error(message, exc_info=exc_info)
+            tp, value, tb = exc_info
+            raise tp, value, tb
 
     return exclog_tween
 

@@ -91,6 +91,28 @@ class Test_exclog_tween(unittest.TestCase):
         msg = self.logger.exceptions[0]
         self.assertTrue('UNAUTHENTICATED USER\n\n\n' in msg)
 
+    def test_evil_encodings(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa') # not utf-8
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        self.assertEqual(len(self.logger.exceptions), 1)
+
+    def test_evil_encodings_extra_info(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa?\xfa=\xfa') # not utf-8
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('ENVIRONMENT' in msg)
+
+    def test_evil_encodings_extra_info_POST(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa', content_type='application/x-www-form-urlencoded; charset=utf-8', POST='\xfa=\xfa') # not utf-8
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('ENVIRONMENT' in msg)
+
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
@@ -150,9 +172,11 @@ class DummyException(object):
 class DummyLogger(object):
     def __init__(self):
         self.exceptions = []
+        self.exc_info = []
 
-    def exception(self, msg):
+    def error(self, msg, exc_info=None):
         self.exceptions.append(msg)
+        self.exc_info.append(exc_info)
 
 class DummyConfig(object):
     def __init__(self):
