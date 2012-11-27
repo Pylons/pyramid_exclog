@@ -139,7 +139,7 @@ class DummyLogger(object):
         self.exceptions = []
         self.exc_info = []
 
-    def exception(self, msg, exc_info=None):
+    def error(self, msg, exc_info=None):
         self.exceptions.append(msg)
         self.exc_info.append(exc_info)
 

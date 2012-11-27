@@ -84,7 +84,7 @@ def exclog_tween_factory(handler, registry):
                            params=pformat(params)))
             else:
                 message = url
-            logger.exception(message, exc_info=exc_info)
+            logger.error(message, exc_info=exc_info)
             tp, value, tb = exc_info
             raise tp, value, tb
 
