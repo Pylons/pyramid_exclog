@@ -71,7 +71,7 @@ def exclog_tween_factory(handler, registry):
                 
                 ENVIRONMENT
                 
-                (env)s
+                %(env)s
                 
                 
                 PARAMETERS
