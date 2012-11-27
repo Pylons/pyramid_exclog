@@ -47,15 +47,31 @@ def exclog_tween_factory(handler, registry):
             raise
         except:
             logger = getLogger('exc_logger')
+            # save the traceback as it may get lost when we try decode
+            exc_info = sys.exc_info()
             
-            
+            try:
+                url = request.url
+            except UnicodeDecodeError:
+                # do the best we can
+                url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
+                qs = request.environ.get('QUERY_STRING')
+                if qs:
+                    url += '?' + qs
+                url = 'could not decode: %r' % url
+
             if extra_info:
+                try:
+                    params = request.params
+                except UnicodeDecodeError:
+                    params = 'could not decode params'
+
                 message = dedent("""\n
                 %(url)s
                 
                 ENVIRONMENT
                 
-                %(env)s
+                (env)s
                 
                 
                 PARAMETERS
@@ -63,13 +79,14 @@ def exclog_tween_factory(handler, registry):
                 %(params)s
                 
                 
-                """ % dict(url=request.url,
+                """ % dict(url=url,
                            env=pformat(request.environ),
-                           params=pformat(request.params)))
+                           params=pformat(params)))
             else:
-                message = request.url
-            logger.exception(message)
-            raise
+                message = url
+            logger.exception(message, exc_info=exc_info)
+            tp, value, tb = exc_info
+            raise tp, value, tb
 
     return exclog_tween
 

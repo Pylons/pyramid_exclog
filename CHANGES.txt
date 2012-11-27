@@ -1,6 +1,9 @@
 Next release
 ------------
 
+- Do not error if the URL, query string or post data contains unexpected
+  encodings.
+
 - Changed testing regime to allow ``setup.py dev``.
 
 - We no longer test under Python 2.5 (although it's not explicitly broken
