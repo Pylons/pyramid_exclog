@@ -30,6 +30,42 @@ def as_globals_list(value):
         L.append(obj)
     return L
 
+def _make_log_message(request, extra_info=True):
+    try:
+        url = request.url
+    except UnicodeDecodeError:
+        # do the best we can
+        url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
+        qs = request.environ.get('QUERY_STRING')
+        if qs:
+            url += '?' + qs
+        url = 'could not decode: %r' % url
+
+    if not extra_info:
+        return url
+
+    try:
+        params = request.params
+    except UnicodeDecodeError:
+        params = 'could not decode params'
+
+    return dedent("""\n
+    %(url)s
+    
+    ENVIRONMENT
+    
+    %(env)s
+    
+    
+    PARAMETERS
+    
+    %(params)s
+    
+    
+    """ % dict(url=url,
+               env=pformat(request.environ),
+               params=pformat(params)))
+
 def exclog_tween_factory(handler, registry):
 
     get = registry.settings.get
@@ -46,45 +82,15 @@ def exclog_tween_factory(handler, registry):
         except ignored:
             raise
         except:
-            logger = getLogger('exc_logger')
-            # save the traceback as it may get lost when we try decode
-            exc_info = sys.exc_info()
-            
             try:
-                url = request.url
-            except UnicodeDecodeError:
-                # do the best we can
-                url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
-                qs = request.environ.get('QUERY_STRING')
-                if qs:
-                    url += '?' + qs
-                url = 'could not decode: %r' % url
-
-            if extra_info:
-                try:
-                    params = request.params
-                except UnicodeDecodeError:
-                    params = 'could not decode params'
-
-                message = dedent("""\n
-                %(url)s
-                
-                ENVIRONMENT
-                
-                %(env)s
-                
-                
-                PARAMETERS
-                
-                %(params)s
-                
-                
-                """ % dict(url=url,
-                           env=pformat(request.environ),
-                           params=pformat(params)))
-            else:
-                message = url
-            logger.error(message, exc_info=exc_info)
+                logger = getLogger('exc_logger')
+                # save the traceback as it may get lost when we get the message
+                exc_info = sys.exc_info()
+                message = _make_log_message(request, extra_info=extra_info)
+                logger.error(message, exc_info=exc_info)
+            except:
+                logger.exception("Exception while logging")
+                raise
             tp, value, tb = exc_info
             raise tp, value, tb
 

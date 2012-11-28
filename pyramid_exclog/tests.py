@@ -1,3 +1,4 @@
+import sys
 import unittest
 from pyramid import testing
 
@@ -87,6 +88,20 @@ class Test_exclog_tween(unittest.TestCase):
         msg = self.logger.exceptions[0]
         self.assertTrue('ENVIRONMENT' in msg)
 
+    def test_exception_while_logging(self):
+        from pyramid.request import Request
+        bang = AssertionError('bang')
+        class BadRequest(Request):
+            @property
+            def url(self):
+                raise bang
+        request = BadRequest.blank('/')
+        self.assertRaises(AssertionError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertEqual('Exception while logging', msg)
+        raised = self.logger.exc_info[0][1]
+        self.assertEqual(raised, bang)
+
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
@@ -142,6 +157,10 @@ class DummyLogger(object):
     def error(self, msg, exc_info=None):
         self.exceptions.append(msg)
         self.exc_info.append(exc_info)
+
+    def exception(self, msg):
+        self.exceptions.append(msg)
+        self.exc_info.append(sys.exc_info())
 
 class DummyConfig(object):
     def __init__(self):
