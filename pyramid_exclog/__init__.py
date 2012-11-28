@@ -31,13 +31,73 @@ def as_globals_list(value):
         L.append(obj)
     return L
 
+def _get_url(request):
+    try:
+        url = request.url
+    except UnicodeDecodeError:
+        # do the best we can
+        url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
+        qs = request.environ.get('QUERY_STRING')
+        if qs:
+            url += '?' + qs
+        url = 'could not decode: %r' % url
+    return url
+
+def _get_message(request):
+    url = _get_url(request)
+    unauth = unauthenticated_userid(request)
+
+    try:
+        params = request.params
+    except UnicodeDecodeError:
+        params = 'could not decode params'
+
+    return dedent("""\n
+    %(url)s
+    
+    ENVIRONMENT
+    
+    %(env)s
+    
+    
+    PARAMETERS
+    
+    %(params)s
+    
+    
+    UNAUTHENTICATED USER
+    
+    %(usr)s
+    
+    """) % dict(url=url,
+               env=pformat(request.environ),
+               params=pformat(params),
+               usr=unauth if unauth else '')
+
+def _handle_error(request, getLogger, get_message):
+    # save the traceback as it may get lost when we get the message.
+    # _handle_error is not in the traceback, so calling sys.exc_info
+    # does NOT create a circular reference
+    exc_info = sys.exc_info()
+    try:
+        logger = getLogger('exc_logger')
+        message = get_message(request)
+        logger.error(message, exc_info=exc_info)
+    except:
+        logger.exception("Exception while logging")
+        raise
+    raise exc_info
+
 def exclog_tween_factory(handler, registry):
 
     get = registry.settings.get
 
     ignored = get('exclog.ignore', (WSGIHTTPException,))
-    extra_info = get('exclog.extra_info', False)
-    get_message = get('exclog.get_message', None)
+    get_message = _get_url
+    if get('exclog.extra_info', False):
+         get_message = _get_message
+    get_message = get('exclog.get_message', get_message)
+
     getLogger = get('exclog.getLogger', 'logging.getLogger')
     getLogger = resolver.resolve(getLogger)
 
@@ -48,58 +108,8 @@ def exclog_tween_factory(handler, registry):
         except ignored:
             raise
         except:
-            # save the traceback as it may get lost when we try decode
-            exc_info = sys.exc_info()
-
-            logger = getLogger('exc_logger')
-            unauth = unauthenticated_userid(request)
- 
-            if get_message:
-                message = get_message(request)
-            else:
-                try:
-                    url = request.url
-                except UnicodeDecodeError:
-                    # do the best we can
-                    url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
-                    qs = request.environ.get('QUERY_STRING')
-                    if qs:
-                        url += '?' + qs
-                    url = 'could not decode: %r' % url
-
-                if extra_info:
-                    try:
-                        params = request.params
-                    except UnicodeDecodeError:
-                        params = 'could not decode params'
-
-                    message = dedent("""\n
-                    %(url)s
-
-                    ENVIRONMENT
-
-                    %(env)s
-
-
-                    PARAMETERS
-
-                    %(params)s
-
-
-                    UNAUTHENTICATED USER
-
-                    %(usr)s
-
-                    """ % dict(url=url,
-                               env=pformat(request.environ),
-                               params=pformat(params),
-                               usr=unauth if unauth else ''))
-                else:
-                    message = url
-            logger.error(message, exc_info=exc_info)
-            tp, value, tb = exc_info
-            raise tp, value, tb
-
+            _handle_error(request, getLogger, get_message)
+            raise AssertionError('Should never get here') # _handle_error always raises
     return exclog_tween
 
 def includeme(config):

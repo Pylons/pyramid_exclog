@@ -16,6 +16,11 @@ Next release
 - Do not error if the URL, query string or post data contains unexpected
   encodings.
 
+- Try log an exception when logging fails.  The rational for logging an
+  exception when logging fails is that often this component is used just
+  before one which converts all errors into ServerErrors (500) thus
+  hiding any exceptions while logging.
+
 0.6 (2012-03-24)
 ----------------
 
