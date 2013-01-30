@@ -1,3 +1,4 @@
+import sys
 import unittest
 from pyramid import testing
 
@@ -64,7 +65,43 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
         self.assertTrue('ENVIRONMENT' in msg)
-        
+
+    def test_evil_encodings(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa') # not utf-8
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        self.assertEqual(len(self.logger.exceptions), 1)
+
+    def test_evil_encodings_extra_info(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa?\xfa=\xfa') # not utf-8
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('ENVIRONMENT' in msg)
+
+    def test_evil_encodings_extra_info_POST(self):
+        from pyramid.request import Request
+        request = Request.blank('/\xfa', content_type='application/x-www-form-urlencoded; charset=utf-8', POST='\xfa=\xfa') # not utf-8
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('ENVIRONMENT' in msg)
+
+    def test_exception_while_logging(self):
+        from pyramid.request import Request
+        bang = AssertionError('bang')
+        class BadRequest(Request):
+            @property
+            def url(self):
+                raise bang
+        request = BadRequest.blank('/')
+        self.assertRaises(AssertionError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertEqual('Exception while logging', msg)
+        raised = self.logger.exc_info[0][1]
+        self.assertEqual(raised, bang)
+
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
@@ -115,9 +152,15 @@ class DummyException(object):
 class DummyLogger(object):
     def __init__(self):
         self.exceptions = []
+        self.exc_info = []
+
+    def error(self, msg, exc_info=None):
+        self.exceptions.append(msg)
+        self.exc_info.append(exc_info)
 
     def exception(self, msg):
         self.exceptions.append(msg)
+        self.exc_info.append(sys.exc_info())
 
 class DummyConfig(object):
     def __init__(self):

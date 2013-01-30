@@ -1,6 +1,14 @@
 Next release
 ------------
 
+- Try log an exception when logging fails.  The rational for logging an
+  exception when logging fails is that often this component is used just
+  before one which converts all errors into ServerErrors (500) thus
+  hiding any exceptions while logging.
+
+- Do not error if the URL, query string or post data contains unexpected
+  encodings.
+
 - Changed testing regime to allow ``setup.py dev``.
 
 - We no longer test under Python 2.5 (although it's not explicitly broken
