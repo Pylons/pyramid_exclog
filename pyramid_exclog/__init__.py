@@ -63,9 +63,9 @@ def exclog_tween_factory(handler, registry):
                 %(params)s
                 
                 
-                """ % dict(url=request.url,
+                """) % dict(url=request.url,
                            env=pformat(request.environ),
-                           params=pformat(request.params)))
+                           params=pformat(request.params))
             else:
                 message = request.url
             logger.exception(message)
