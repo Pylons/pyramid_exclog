@@ -63,8 +63,9 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
-        self.assertTrue('ENVIRONMENT' in msg)
-        
+        self.assertTrue(msg.strip().startswith("http://localhost/\n\nENVIRONMENT"))
+        self.assertTrue(msg.strip().endswith("PARAMETERS\n\nNestedMultiDict([])"))
+
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
