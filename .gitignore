@@ -14,3 +14,4 @@ pyramid_exclog/coverage.xml
 env26/
 env27/
 env32/
+coverage.xml
