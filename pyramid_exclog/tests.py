@@ -66,6 +66,14 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertTrue(msg.strip().startswith("http://localhost/\n\nENVIRONMENT"))
         self.assertTrue(msg.strip().endswith("PARAMETERS\n\nNestedMultiDict([])"))
 
+    def test_get_message(self):
+        self.registry.settings['exclog.get_message'] = lambda req: 'MESSAGE'
+        self.assertRaises(NotImplementedError, self._callFUT)
+        self.assertEqual(len(self.logger.exceptions), 1)
+        msg = self.logger.exceptions[0]
+        self.assertEqual(msg, 'MESSAGE')
+
+
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
@@ -110,6 +118,15 @@ class Test_includeme(unittest.TestCase):
         self._callFUT(config)
         self.assertEqual(config.registry.settings['exclog.extra_info'], True)
 
+    def test_it_with_get_message(self):
+        config = DummyConfig()
+        get_message = lambda req: 'MESSAGE'
+        config.settings['exclog.get_message'] = get_message
+        self._callFUT(config)
+        self.assertEqual(config.registry.settings['exclog.get_message'],
+                         get_message)
+
+
 class DummyException(object):
     pass
 
@@ -129,3 +146,6 @@ class DummyConfig(object):
     def add_tween(self, factory, under=None, over=None):
         self.tweens.append((factory, under, over))
 
+    def maybe_dotted(self, obj):
+        """NOTE: ``obj`` should NOT be a dotted name."""
+        return obj

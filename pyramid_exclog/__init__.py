@@ -36,6 +36,7 @@ def exclog_tween_factory(handler, registry):
 
     ignored = get('exclog.ignore', (WSGIHTTPException,))
     extra_info = get('exclog.extra_info', False)
+    get_message = get('exclog.get_message', None)
     getLogger = get('exclog.getLogger', 'logging.getLogger')
     getLogger = resolver.resolve(getLogger)
 
@@ -49,7 +50,9 @@ def exclog_tween_factory(handler, registry):
             logger = getLogger('exc_logger')
             
             
-            if extra_info:
+            if get_message:
+                message = get_message(request)
+            elif extra_info:
                 message = dedent("""\n
                 %(url)s
                 
@@ -90,6 +93,10 @@ def includeme(config):
     ignored = as_globals_list(get('exclog.ignore',
                                   'pyramid.httpexceptions.WSGIHTTPException'))
     extra_info = asbool(get('exclog.extra_info', False))
+    get_message = get('exclog.get_message', None)
+    if get_message is not None:
+        get_message = config.maybe_dotted(get_message)
     config.registry.settings['exclog.ignore'] = tuple(ignored)
     config.registry.settings['exclog.extra_info'] = extra_info
+    config.registry.settings['exclog.get_message'] = get_message
     config.add_tween('pyramid_exclog.exclog_tween_factory', under=EXCVIEW)
