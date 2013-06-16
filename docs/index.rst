@@ -301,6 +301,20 @@ section of your Pyramid's ``.ini`` file.  These are:
       [app:myapp]
       exclog.extra_info = true
 
+``exclog.get_message``
+
+   If a customized error message is needed, the ``exclog.get_message``
+   setting can be pointed at a function that takes a request as its only
+   argument and returns a string. It can be either a dotted name or the
+   actual function. For example::
+
+   .. code-block:: python
+
+      [app:myapp]
+      exclog.get_message = myapp.somemodule.get_exc_log_message
+
+   If ``exclog.get_message`` is set, ``exclog.extra_info`` will be ignored.
+
 Explicit "Tween" Configuration
 ------------------------------
 
