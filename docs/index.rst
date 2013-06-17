@@ -290,7 +290,8 @@ section of your Pyramid's ``.ini`` file.  These are:
 
    If ``exclog.extra_info`` is true the error message will also include
    the environ and params attributes of ``pyramid.request.Request`` formatted
-   using ``pprint.pformat``.
+   using ``pprint.pformat()``. The output from 
+   ``pyramid.security.unauthenticated_id()`` is also included.
 
    This setting defaults to false
 
