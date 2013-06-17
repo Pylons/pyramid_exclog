@@ -3,6 +3,9 @@ Next release
 
 - Add explicit support for Python 3.3.
 
+- Add ``unauthenticated_user()`` to the output when the ``extra_info`` key
+  is set to True (PR #11).
+
 - Add a hook for constructing custom log messages (PR #15).
 
 - Changed testing regime to allow ``setup.py dev``.
