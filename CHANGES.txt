@@ -1,7 +1,7 @@
 Next release
 ------------
 
-- Add explicity Python 3.3 compatibility.
+- Add explicit support for Python 3.3.
 
 - Add a hook for constructing custom log messages (PR #15).
 
