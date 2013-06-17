@@ -269,12 +269,12 @@ section of your Pyramid's ``.ini`` file.  These are:
    whitespace-separated string, e.g. ``KeyError ValueError
    myapp.MyException`` or it may consume multiple lines in the ``.ini`` file.
 
-  This setting defaults to a list containing only
+   This setting defaults to a list containing only
    ``pyramid.httpexceptions.WSGIHTTPException``.
 
    An example:
 
-   .. code-block:: python
+   .. code-block:: ini
 
       [app:myapp]
       exclog.ignore = pyramid.httpexceptions.WSGIHTTPException
@@ -292,11 +292,11 @@ section of your Pyramid's ``.ini`` file.  These are:
    the environ and params attributes of ``pyramid.request.Request`` formatted
    using ``pprint.pformat``.
 
-  This setting defaults to false
+   This setting defaults to false
 
    An example:
 
-   .. code-block:: python
+   .. code-block:: ini
 
       [app:myapp]
       exclog.extra_info = true
@@ -306,9 +306,9 @@ section of your Pyramid's ``.ini`` file.  These are:
    If a customized error message is needed, the ``exclog.get_message``
    setting can be pointed at a function that takes a request as its only
    argument and returns a string. It can be either a dotted name or the
-   actual function. For example::
+   actual function. For example:
 
-   .. code-block:: python
+   .. code-block:: ini
 
       [app:myapp]
       exclog.get_message = myapp.somemodule.get_exc_log_message
