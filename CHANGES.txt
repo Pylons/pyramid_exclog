@@ -3,6 +3,8 @@ Next release
 
 - Add explicity Python 3.3 compatibility.
 
+- Add a hook for constructing custom log messages (PR #15).
+
 - Changed testing regime to allow ``setup.py dev``.
 
 - We no longer test under Python 2.5 (although it's not explicitly broken
