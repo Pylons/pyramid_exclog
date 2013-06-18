@@ -67,18 +67,18 @@ def _make_log_message(request, extra_info=True):
                params=pformat(params)))
 
 def _handle_error(request, getLogger, extra_info):
+    # save the traceback as it may get lost when we get the message.
+    # _handle_error is not in the traceback, so calling sys.exc_info
+    # does NOT create a circular reference
+    exc_info = sys.exc_info()
     try:
-        # save the traceback as it may get lost when we get the message.
-        # _handle_error is not in the traceback, so no circular reference
-        exc_info = sys.exc_info()
         logger = getLogger('exc_logger')
         message = _make_log_message(request, extra_info=extra_info)
         logger.error(message, exc_info=exc_info)
     except:
         logger.exception("Exception while logging")
         raise
-    tp, value, tb = exc_info
-    raise tp, value, tb
+    raise exc_info
 
 def exclog_tween_factory(handler, registry):
 
