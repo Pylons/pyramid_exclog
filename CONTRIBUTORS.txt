@@ -102,3 +102,4 @@ Contributors
 - Rob Miller, 2012/04/24
 - Bruk Habtu, 2012/11/23
 - Wyatt Baldwin, 2013/06/15
+- Brian Sutherland, 2013/06/19
