@@ -126,7 +126,11 @@ class Test_get_message(unittest.TestCase):
 
     def test_evil_encodings_extra_info_POST(self):
         from pyramid.request import Request
-        request = Request.blank('/url', content_type='application/x-www-form-urlencoded; charset=utf-8', POST='%FA=%FA') # not utf-8
+        request = Request.blank('/url',
+                                content_type=
+                                    'application/x-www-form-urlencoded; '
+                                    'charset=utf-8',
+                                POST='%FA=%FA') # not utf-8
         self._callFUT(request) # doesn't fail
 
 

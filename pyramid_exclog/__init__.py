@@ -36,7 +36,9 @@ def _get_url(request):
         url = request.url
     except UnicodeDecodeError:
         # do the best we can
-        url = request.host_url + request.environ.get('SCRIPT_NAME') + request.environ.get('PATH_INFO')
+        url = (request.host_url +
+               request.environ.get('SCRIPT_NAME') +
+               request.environ.get('PATH_INFO'))
         qs = request.environ.get('QUERY_STRING')
         if qs:
             url += '?' + qs
@@ -108,7 +110,8 @@ def exclog_tween_factory(handler, registry):
             raise
         except:
             _handle_error(request, getLogger, get_message)
-            raise AssertionError('Should never get here') # _handle_error always raises
+            # _handle_error always raises
+            raise AssertionError('Should never get here')
     return exclog_tween
 
 def includeme(config):
