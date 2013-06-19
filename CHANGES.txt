@@ -3,6 +3,14 @@ Next release
 
 - Add explicit support for Python 3.3.
 
+- Do not error if the URL, query string or post data contains unexpected
+  encodings.
+
+- Try to log an exception when logging fails.  The rational for logging an
+  exception when logging fails is that often this component is used just
+  before one which converts all errors into ServerErrors (500) thus
+  hiding any exceptions triggered while logging.
+
 - Add ``unauthenticated_user()`` to the output when the ``extra_info`` key
   is set to True (PR #11).
 
@@ -12,14 +20,6 @@ Next release
 
 - We no longer test under Python 2.5 (although it's not explicitly broken
   under 2.5).
-
-- Do not error if the URL, query string or post data contains unexpected
-  encodings.
-
-- Try log an exception when logging fails.  The rational for logging an
-  exception when logging fails is that often this component is used just
-  before one which converts all errors into ServerErrors (500) thus
-  hiding any exceptions while logging.
 
 0.6 (2012-03-24)
 ----------------
