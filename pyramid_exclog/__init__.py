@@ -40,7 +40,7 @@ def _get_url(request):
         qs = request.environ.get('QUERY_STRING')
         if qs:
             url += '?' + qs
-        url = 'could not decode: %r' % url
+        url = 'could not decode url: %r' % url
     return url
 
 def _get_message(request):
@@ -85,8 +85,7 @@ def _handle_error(request, getLogger, get_message):
         logger.error(message, exc_info=exc_info)
     except:
         logger.exception("Exception while logging")
-        raise
-    raise exc_info
+    raise
 
 def exclog_tween_factory(handler, registry):
 

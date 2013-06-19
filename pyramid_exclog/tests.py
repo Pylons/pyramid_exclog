@@ -92,28 +92,6 @@ class Test_exclog_tween(unittest.TestCase):
         msg = self.logger.exceptions[0]
         self.assertTrue('UNAUTHENTICATED USER\n\n\n' in msg)
 
-    def test_evil_encodings(self):
-        from pyramid.request import Request
-        request = Request.blank('/\xfa') # not utf-8
-        self.assertRaises(NotImplementedError, self._callFUT, request=request)
-        self.assertEqual(len(self.logger.exceptions), 1)
-
-    def test_evil_encodings_extra_info(self):
-        from pyramid.request import Request
-        request = Request.blank('/\xfa?\xfa=\xfa') # not utf-8
-        self.registry.settings['exclog.extra_info'] = True
-        self.assertRaises(NotImplementedError, self._callFUT, request=request)
-        msg = self.logger.exceptions[0]
-        self.assertTrue('ENVIRONMENT' in msg)
-
-    def test_evil_encodings_extra_info_POST(self):
-        from pyramid.request import Request
-        request = Request.blank('/\xfa', content_type='application/x-www-form-urlencoded; charset=utf-8', POST='\xfa=\xfa') # not utf-8
-        self.registry.settings['exclog.extra_info'] = True
-        self.assertRaises(NotImplementedError, self._callFUT, request=request)
-        msg = self.logger.exceptions[0]
-        self.assertTrue('ENVIRONMENT' in msg)
-
     def test_exception_while_logging(self):
         from pyramid.request import Request
         bang = AssertionError('bang')
@@ -122,11 +100,35 @@ class Test_exclog_tween(unittest.TestCase):
             def url(self):
                 raise bang
         request = BadRequest.blank('/')
-        self.assertRaises(AssertionError, self._callFUT, request=request)
+        self.assertRaises(Exception, self._callFUT, request=request)
         msg = self.logger.exceptions[0]
         self.assertEqual('Exception while logging', msg)
         raised = self.logger.exc_info[0][1]
         self.assertEqual(raised, bang)
+
+class Test_get_message(unittest.TestCase):
+
+    def _callFUT(self, request):
+        from pyramid_exclog import _get_message
+        return _get_message(request)
+
+    def test_evil_encodings(self):
+        from pyramid.request import Request
+        request = Request.blank('/%FA') # not utf-8
+        msg = self._callFUT(request)
+        self.assertTrue("could not decode url: 'http://localhost/" in msg)
+
+    def test_evil_encodings_extra_info(self):
+        from pyramid.request import Request
+        request = Request.blank('/url?%FA=%FA') # not utf-8
+        msg = self._callFUT(request)
+        self.assertTrue("could not decode params" in msg, msg)
+
+    def test_evil_encodings_extra_info_POST(self):
+        from pyramid.request import Request
+        request = Request.blank('/url', content_type='application/x-www-form-urlencoded; charset=utf-8', POST='%FA=%FA') # not utf-8
+        self._callFUT(request) # doesn't fail
+
 
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
