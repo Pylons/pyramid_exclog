@@ -111,7 +111,7 @@ def exclog_tween_factory(handler, registry):
         except:
             _handle_error(request, getLogger, get_message)
             # _handle_error always raises
-            raise AssertionError('Should never get here')
+            raise AssertionError('Should never get here') #pragma NO COVER
     return exclog_tween
 
 def includeme(config):

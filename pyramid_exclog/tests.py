@@ -106,7 +106,40 @@ class Test_exclog_tween(unittest.TestCase):
         raised = self.logger.exc_info[0][1]
         self.assertEqual(raised, bang)
 
-class Test_get_message(unittest.TestCase):
+
+class Test__get_url(unittest.TestCase):
+
+    def _callFUT(self, request):
+        from pyramid_exclog import _get_url
+        return _get_url(request)
+
+    def test_normal(self):
+        from pyramid.testing import DummyRequest
+        request = DummyRequest()
+        self.assertEqual(self._callFUT(request), 'http://example.com')
+
+    def test_w_deocode_error_wo_qs(self):
+        from pyramid.request import Request
+        request = Request.blank('/')
+        request.environ['SCRIPT_NAME'] = '/script'
+        request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
+        self.assertEqual(self._callFUT(request),
+                         r"could not decode url: " +
+                         r"'http://localhost/script/path/with/latin1/\x80'")
+
+    def test_w_deocode_error_w_qs(self):
+        from pyramid.request import Request
+        request = Request.blank('/')
+        request.environ['SCRIPT_NAME'] = '/script'
+        request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
+        request.environ['QUERY_STRING'] = 'foo=bar'
+        self.assertEqual(self._callFUT(request),
+                         r"could not decode url: " +
+                         r"'http://localhost/script/path/with/latin1/\x80" +
+                         r"?foo=bar'")
+
+
+class Test__get_message(unittest.TestCase):
 
     def _callFUT(self, request):
         from pyramid_exclog import _get_message
