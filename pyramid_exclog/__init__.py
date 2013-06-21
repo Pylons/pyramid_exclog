@@ -134,7 +134,7 @@ def includeme(config):
     get_message = get('exclog.get_message', None)
     if get_message is not None:
         get_message = config.maybe_dotted(get_message)
+        config.registry.settings['exclog.get_message'] = get_message
     config.registry.settings['exclog.ignore'] = tuple(ignored)
     config.registry.settings['exclog.extra_info'] = extra_info
-    config.registry.settings['exclog.get_message'] = get_message
     config.add_tween('pyramid_exclog.exclog_tween_factory', under=EXCVIEW)
