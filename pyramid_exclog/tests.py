@@ -219,6 +219,11 @@ class Test_includeme(unittest.TestCase):
         self.assertEqual(config.registry.settings['exclog.get_message'],
                          get_message)
 
+    def test_get_message_not_set_by_includeme(self):
+        config = DummyConfig()
+        self._callFUT(config)
+        self.assertTrue('exclog.get_message' not in config.registry.settings)
+
 
 class DummyException(object):
     pass
