@@ -74,7 +74,7 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
         self.assertEqual(msg, 'MESSAGE')
- 
+
     def test_user_info_user(self):
         self.config.testing_securitypolicy(
                 userid='hank',
@@ -84,7 +84,7 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
         self.assertTrue('UNAUTHENTICATED USER\n\nhank' in msg)
-    
+
     def test_user_info_no_user(self):
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)

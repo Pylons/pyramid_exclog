@@ -1,6 +1,5 @@
 import sys
 from pprint import pformat
-from textwrap import dedent
 
 from pyramid.tweens import EXCVIEW
 from pyramid.settings import aslist
@@ -45,6 +44,26 @@ def _get_url(request):
         url = 'could not decode url: %r' % url
     return url
 
+_MESSAGE_TEMPLATE = """
+
+%(url)s
+
+ENVIRONMENT
+
+%(env)s
+
+
+PARAMETERS
+
+%(params)s
+
+
+UNAUTHENTICATED USER
+
+%(usr)s
+
+"""
+
 def _get_message(request):
     url = _get_url(request)
     unauth = unauthenticated_userid(request)
@@ -54,27 +73,11 @@ def _get_message(request):
     except UnicodeDecodeError:
         params = 'could not decode params'
 
-    return dedent("""\n
-    %(url)s
-    
-    ENVIRONMENT
-    
-    %(env)s
-    
-    
-    PARAMETERS
-    
-    %(params)s
-    
-    
-    UNAUTHENTICATED USER
-    
-    %(usr)s
-    
-    """) % dict(url=url,
-               env=pformat(request.environ),
-               params=pformat(params),
-               usr=unauth if unauth else '')
+    return _MESSAGE_TEMPLATE % dict(
+            url=url,
+            env=pformat(request.environ),
+            params=pformat(params),
+            usr=unauth if unauth else '')
 
 def _handle_error(request, getLogger, get_message):
     # save the traceback as it may get lost when we get the message.
