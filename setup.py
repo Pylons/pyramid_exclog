@@ -38,7 +38,7 @@ docs_extras = [
     ]
 
 setup(name='pyramid_exclog',
-      version='0.7',
+      version='0.8dev',
       description=('A package which logs to a Python logger when an '
                    'exception is raised by a Pyramid application'),
       long_description=README + '\n\n' + CHANGES,
