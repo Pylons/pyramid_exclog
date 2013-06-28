@@ -1,5 +1,5 @@
-Next release
-------------
+0.7 (2013-06-28)
+----------------
 
 - Add explicit support for Python 3.3.
 
