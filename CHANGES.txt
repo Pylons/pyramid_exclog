@@ -6,10 +6,9 @@ Next release
 - Do not error if the URL, query string or post data contains unexpected
   encodings.
 
-- Try to log an exception when logging fails.  The rational for logging an
-  exception when logging fails is that often this component is used just
-  before one which converts all errors into ServerErrors (500) thus
-  hiding any exceptions triggered while logging.
+- Try to log an exception when logging fails:  often the middleware is used
+  just inside one which converts all errors into ServerErrors (500), hiding
+  any exceptions triggered while logging.
 
 - Add ``unauthenticated_user()`` to the output when the ``extra_info`` key
   is set to True (PR #11).
