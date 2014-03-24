@@ -106,10 +106,10 @@ to start making use of ``pyramid_exclog``, you'll have to add an
 
 1) Append ``, exc_logger`` to the ``keys`` value of the ``[loggers]`` section,
 
-2) Append ``, exc_handler`` to he ``keys`` value of the ``[handlers]``
+2) Append ``, exc_handler`` to the ``keys`` value of the ``[handlers]``
    section.
 
-3) Append ``, exc_formatter`` to he ``keys`` value of the ``[formatters]``
+3) Append ``, exc_formatter`` to the ``keys`` value of the ``[formatters]``
    section.
 
 4) Add a section named ``[logger_exc_logger]`` with logger information
