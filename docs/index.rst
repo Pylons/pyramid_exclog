@@ -209,7 +209,7 @@ Exception``:
    handlers =
    qualname = myapp
 
-   [logger_exc_logger]
+   [logger_exc_log]
    level = ERROR
    handlers = exc_handler
    qualname = exc_logger
