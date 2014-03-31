@@ -1,7 +1,7 @@
 Unreleased
 ----------
 
-- TBD
+- Add explicit support for Python 3.4.
 
 0.7 (2013-06-28)
 ----------------
