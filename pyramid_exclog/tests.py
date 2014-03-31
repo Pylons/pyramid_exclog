@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import unittest
 from pyramid import testing
@@ -155,6 +156,18 @@ class Test__get_message(unittest.TestCase):
         from pyramid.request import Request
         request = Request.blank('/url?%FA=%FA') # not utf-8
         msg = self._callFUT(request)
+        self.assertTrue("could not decode params" in msg, msg)
+
+    def test_unicode_user_id_with_non_utf_8_url(self):
+        # On Python 2 we may get a unicode userid while QUERY_STRING is a "str"
+        # object containing non-ascii bytes.
+        from pyramid.request import Request
+        with testing.testConfig() as config:
+            config.testing_securitypolicy(userid=b'\xe6\xbc\xa2'.decode('utf-8'))
+            request = Request.blank('/')
+            request.environ['PATH_INFO'] = '/url'
+            request.environ['QUERY_STRING'] = '\xfa=\xfa'
+            msg = self._callFUT(request)
         self.assertTrue("could not decode params" in msg, msg)
 
     def test_evil_encodings_extra_info_POST(self):

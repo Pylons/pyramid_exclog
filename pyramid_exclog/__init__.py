@@ -73,11 +73,16 @@ def _get_message(request):
     except UnicodeDecodeError:
         params = 'could not decode params'
 
+    unauth = unauth if unauth else ''
+    if not isinstance(unauth, str):
+        # python 2 only
+        unauth = unauth.encode('utf-8')
+
     return _MESSAGE_TEMPLATE % dict(
             url=url,
             env=pformat(request.environ),
             params=pformat(params),
-            usr=unauth if unauth else '')
+            usr=unauth)
 
 def _handle_error(request, getLogger, get_message):
     # save the traceback as it may get lost when we get the message.
