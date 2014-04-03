@@ -8,6 +8,9 @@ Unreleased
 - Fix UnicodeDecodeError on Python 2 when QUERY_STRING is a ``str``
   containing non-ascii bytes.
 
+- Allways pass the logging module text rather than sometimes
+  bytes and sometimes text.
+
 0.7 (2013-06-28)
 ----------------
 

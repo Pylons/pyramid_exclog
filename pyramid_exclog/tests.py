@@ -58,14 +58,14 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
-        self.assertEqual(msg, self.request.url)
+        self.assertEqual(msg, repr(self.request.url))
 
     def test_extra_info(self):
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0].strip()
-        self.assertTrue(msg.startswith("http://localhost/\n\nENVIRONMENT"))
+        self.assertTrue(msg.startswith("'http://localhost/'\n\nENVIRONMENT"), msg)
         self.assertTrue("PARAMETERS\n\nNestedMultiDict([])" in msg)
         self.assertTrue('ENVIRONMENT' in msg)
 
@@ -77,21 +77,22 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertEqual(msg, 'MESSAGE')
 
     def test_user_info_user(self):
+        from pyramid_exclog import _text_type
         self.config.testing_securitypolicy(
-                userid='hank',
+                userid=_text_type('hank'),
                 permissive=True)
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
-        self.assertTrue('UNAUTHENTICATED USER\n\nhank' in msg)
+        self.assertTrue('UNAUTHENTICATED USER\n\nhank' in msg, msg)
 
     def test_user_info_no_user(self):
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
-        self.assertTrue('UNAUTHENTICATED USER\n\n\n' in msg)
+        self.assertTrue('UNAUTHENTICATED USER\n\nNone\n' in msg, msg)
 
     def test_exception_while_logging(self):
         from pyramid.request import Request
@@ -117,7 +118,7 @@ class Test__get_url(unittest.TestCase):
     def test_normal(self):
         from pyramid.testing import DummyRequest
         request = DummyRequest()
-        self.assertEqual(self._callFUT(request), 'http://example.com')
+        self.assertEqual(self._callFUT(request), "'http://example.com'")
 
     def test_w_deocode_error_wo_qs(self):
         from pyramid.request import Request
@@ -152,6 +153,17 @@ class Test__get_message(unittest.TestCase):
         msg = self._callFUT(request)
         self.assertTrue("could not decode url: 'http://localhost/" in msg)
 
+    def test_return_type_is_unicode(self):
+        # _get_message should return something the logging module accepts.
+        # this, apparently is unicode or ascii-encoded bytes. Unfortunately,
+        # unicode fails with some handlers if you do not set the encoding
+        # on them.
+        from pyramid.request import Request
+        request = Request.blank('/url') # not utf-8
+        msg = self._callFUT(request)
+        from pyramid_exclog import _text_type
+        self.assertTrue(isinstance(msg, _text_type), repr(msg))
+
     def test_evil_encodings_extra_info(self):
         from pyramid.request import Request
         request = Request.blank('/url?%FA=%FA') # not utf-8
@@ -169,6 +181,24 @@ class Test__get_message(unittest.TestCase):
             request.environ['QUERY_STRING'] = '\xfa=\xfa'
             msg = self._callFUT(request)
         self.assertTrue("could not decode params" in msg, msg)
+
+    def test_non_ascii_bytes_in_userid(self):
+        from pyramid.request import Request
+        byte_str = b'\xe6\xbc\xa2'
+        with testing.testConfig() as config:
+            config.testing_securitypolicy(userid=byte_str)
+            request = Request.blank('/')
+            msg = self._callFUT(request)
+        self.assertTrue(repr(byte_str) in msg, msg)
+
+    def test_integer_user_id(self):
+        # userids can apparently be integers as well
+        from pyramid.request import Request
+        with testing.testConfig() as config:
+            config.testing_securitypolicy(userid=42)
+            request = Request.blank('/')
+            msg = self._callFUT(request)
+        self.assertTrue('42' in msg)
 
     def test_evil_encodings_extra_info_POST(self):
         from pyramid.request import Request
