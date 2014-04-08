@@ -1,0 +1,13 @@
+language: python
+env:
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=pypy
+    - TOXENV=py32
+    - TOXENV=py33
+install:
+    - travis_retry pip install tox
+script:
+    - travis_retry tox
+notifications:
+    email: false
