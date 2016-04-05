@@ -73,7 +73,7 @@ def _get_message(request):
     except UnicodeDecodeError:
         params = 'could not decode params'
     except IOError as ex:
-        params = 'IOError while decoding params: %s' % ex.message
+        params = 'IOError while decoding params: %s' % ex
 
     return _MESSAGE_TEMPLATE % dict(
             url=url,
