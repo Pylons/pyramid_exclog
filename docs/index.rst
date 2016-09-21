@@ -259,8 +259,9 @@ section of your Pyramid's ``.ini`` file.  These are:
    those eventually caught by a Pyramid :term:`exception view`) except "http
    exceptions" (any exception that derives from the base class
    ``pyramid.httpexceptions.WSGIHTTPException`` such as ``HTTPFound``).  You
-   can instruct ``pyramid_exclog`` to ignore custom exception types by using
-   the ``excview.ignore`` configuration setting.
+   can instruct ``pyramid_exclog`` to override this default in order to
+   ignore custom exception types (or to re-enable logging "http exceptions")
+   by using the ``excview.ignore`` configuration setting.
 
    ``excview.ignore`` is a list of dotted Python names representing exception
    types (e.g. ``myapp.MyException``) or builtin exception names (e.g.

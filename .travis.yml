@@ -2,17 +2,16 @@
 language: python
 
 python:
-  - 2.6
   - 2.7
   - pypy
-  - 3.2
   - 3.3
   - 3.4
+  - 3.5
   - pypy3
 
-install: python setup.py dev
+install: python setup.py -q dev
 
-script: python setup.py test -q
+script: python setup.py -q test -q
 
 notifications:
   email:
