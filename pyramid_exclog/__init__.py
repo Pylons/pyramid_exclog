@@ -14,8 +14,10 @@ PY3 = sys.version_info[0] == 3
 
 if PY3: # pragma: no cover
     import builtins
+    _text_type = str
 else:
     import __builtin__ as builtins
+    _text_type = unicode
 
 def as_globals_list(value):
     L = []
@@ -32,7 +34,7 @@ def as_globals_list(value):
 
 def _get_url(request):
     try:
-        url = request.url
+        url = repr(request.url)
     except UnicodeDecodeError:
         # do the best we can
         url = (request.host_url +
@@ -42,9 +44,10 @@ def _get_url(request):
         if qs:
             url += '?' + qs
         url = 'could not decode url: %r' % url
+    url = _text_type(url)
     return url
 
-_MESSAGE_TEMPLATE = """
+_MESSAGE_TEMPLATE = _text_type("""
 
 %(url)s
 
@@ -62,9 +65,14 @@ UNAUTHENTICATED USER
 
 %(usr)s
 
-"""
+""")
 
 def _get_message(request):
+    """Return a string with useful information from the request.
+
+    On python 2 this method will return ``unicode`` and on Python 3 ``str``
+    will be returned. This seems to be what the logging module expects.
+    """
     url = _get_url(request)
     unauth = unauthenticated_userid(request)
 
@@ -75,11 +83,14 @@ def _get_message(request):
     except IOError as ex:
         params = 'IOError while decoding params: %s' % ex
 
+    if not isinstance(unauth, _text_type):
+        unauth = repr(unauth)
+
     return _MESSAGE_TEMPLATE % dict(
             url=url,
             env=pformat(request.environ),
             params=pformat(params),
-            usr=unauth if unauth else '')
+            usr=unauth)
 
 def _handle_error(request, getLogger, get_message):
     # save the traceback as it may get lost when we get the message.
