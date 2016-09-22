@@ -1,6 +1,8 @@
 Unreleased
 ----------
 
+- Handle IOError exception when accessing request parameters. 
+
 - Drop support for Python 2.6 and 3.2.
 
 - Handle IOError exception when accessing request parameters. 
