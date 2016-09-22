@@ -165,7 +165,18 @@ class Test__get_message(unittest.TestCase):
                                     'charset=utf-8',
                                 POST='%FA=%FA') # not utf-8
         self._callFUT(request) # doesn't fail
+        
+    def test_io_error(self):
+        from pyramid.request import Request
+        bang = IOError('bang')
+        class BadRequest(Request):
+            @property
+            def params(self):
+                raise bang
 
+        request = BadRequest.blank('/')
+        msg = self._callFUT(request)
+        self.assertTrue("IOError while decoding params: bang" in msg, msg)
 
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
