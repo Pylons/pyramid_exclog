@@ -1,11 +1,11 @@
 Unreleased
 ----------
 
-- Handle IOError exception when accessing request parameters.  
-
 - Drop support for Python 2.6 and 3.2.
 
 - Add explicit support for Python 3.4 and 3.5.
+
+- Handle IOError exception when accessing request parameters.
 
 - Fix UnicodeDecodeError on Python 2 when QUERY_STRING is a ``str``
   containing non-ascii bytes.
