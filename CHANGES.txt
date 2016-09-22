@@ -5,8 +5,6 @@ Unreleased
 
 - Drop support for Python 2.6 and 3.2.
 
-- Handle IOError exception when accessing request parameters. 
-
 - Add explicit support for Python 3.4 and 3.5.
 
 0.7 (2013-06-28)
