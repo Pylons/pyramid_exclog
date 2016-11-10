@@ -6,7 +6,6 @@ from pyramid.settings import aslist
 from pyramid.settings import asbool
 from pyramid.util import DottedNameResolver
 from pyramid.httpexceptions import WSGIHTTPException
-from pyramid.security import unauthenticated_userid
 
 resolver = DottedNameResolver(None)
 
@@ -74,7 +73,7 @@ def _get_message(request):
     will be returned. This seems to be what the logging module expects.
     """
     url = _get_url(request)
-    unauth = unauthenticated_userid(request)
+    unauth = request.unauthenticated_userid
 
     try:
         params = request.params
