@@ -10,4 +10,4 @@ See the documentation at
 http://docs.pylonsproject.org/projects/pyramid_exclog/en/latest/ for more
 information.
 
-This package will only work with Pyramid 1.2a1 and better.
+This package will only work with Pyramid 1.5 and better.
