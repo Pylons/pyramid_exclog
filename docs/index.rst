@@ -1,8 +1,9 @@
+==============
 pyramid_exclog
 ==============
 
 Overview
---------
+========
 
 A package which logs Pyramid application exception (error) information to a
 standard Python :term:`logger`.  This add-on is most useful when used in
@@ -12,14 +13,43 @@ file, to UNIX syslog, to the Windows Event Log, or even to email.
 .. warning:: This package will only work with Pyramid 1.5 and better.
 
 Installation
+============
+
+Stable release
+--------------
+
+To install pyramid_exclog, run this command in your terminal:
+
+.. code-block:: console
+
+    $ pip install pyramid_exclog
+
+If you don't have `pip`_ installed, this `Python installation guide`_ can guide
+you through the process.
+
+.. _pip: https://pip.pypa.io
+.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+
+
+From sources
 ------------
 
-Install using setuptools, e.g. (within a virtualenv)::
+The sources for pyramid_exclog can be downloaded from the `Github repo`_.
 
-  $ easy_install pyramid_exclog
+.. code-block:: console
+
+    $ git clone https://github.com/Pylons/pyramid_exclog.git
+
+Once you have a copy of the source, you can install it with:
+
+.. code-block:: console
+
+    $ pip install -e .
+
+.. _Github repo: https://github.com/Pylons/pyramid_exclog
 
 Setup
------
+=====
 
 Once ``pyramid_exclog`` is installed, you must use the ``config.include``
 mechanism to include it into your Pyramid project's configuration.  In your
@@ -28,7 +58,7 @@ Pyramid project's ``__init__.py``:
 .. code-block:: python
    :linenos:
 
-   config = Configurator(.....)
+   config = Configurator(...)
    config.include('pyramid_exclog')
 
 Alternately you can use the ``pyramid.includes`` configuration value in your
@@ -41,7 +71,7 @@ Alternately you can use the ``pyramid.includes`` configuration value in your
    pyramid.includes = pyramid_exclog
 
 Using
------
+=====
 
 When this add-on is included into your Pyramid application, whenever a
 request to your application causes an exception to be raised, the add-on will
@@ -247,7 +277,7 @@ http://docs.python.org/library/logging.config.html#configuration-file-format
 .
 
 Settings
----------
+=========
 
 :mod:`pyramid_exclog`` also has some its own settings in the form of
 configuration values which are meant to be placed in the ``[app:myapp]``
@@ -318,7 +348,7 @@ section of your Pyramid's ``.ini`` file.  These are:
    If ``exclog.get_message`` is set, ``exclog.extra_info`` will be ignored.
 
 Explicit "Tween" Configuration
-------------------------------
+==============================
 
 Note that the exception logger is implemented as a Pyramid :term:`tween`, and
 it can be used in the explicit tween chain if its implicit position in the
@@ -326,24 +356,24 @@ tween chain is incorrect (see the output of ``ptweens``)::
 
    [app:myapp]
    pyramid.tweens = someothertween
-                    pyramid.tweens.excview_tween_factory
                     pyramid_exclog.exclog_tween_factory
+                    pyramid.tweens.excview_tween_factory
 
-It usually belongs directly above the "MAIN" entry in the ``ptweens``
-output, and will attempt to sort there by default as the result of having
-``include('pyramid_exclog')`` invoked.
+It usually belongs directly above the ``pyramid.tweens.excview_tween_factory``
+entry in the ``ptweens`` output, and will attempt to sort there by default as
+the result of having ``include('pyramid_exclog')`` invoked.
 
 Putting it above the ``pyramid.tweens.excview_tween_factory`` will cause it
 to log only exceptions that are not caught by an exception view.
 
 Deployment under mod_wsgi
--------------------------
+=========================
 
 To make logging facilities available when loading an application via
-mod_wsgi, like it behaves with pserve, you must call the logging.fileConfig
+mod_wsgi, like it behaves with pserve, you must call the ``logging.fileConfig``
 function on the ini file containing the logger entry.
 
-Here's an example of a run.wsgi file:
+Here's an example of a ``run.wsgi`` file:
 
 .. code-block:: python
 
@@ -357,7 +387,7 @@ Here's an example of a run.wsgi file:
     application = get_app(conf, 'main')
 
 More Information
-----------------
+================
 
 .. toctree::
    :maxdepth: 1
@@ -367,7 +397,7 @@ More Information
 
 
 Reporting Bugs / Development Versions
--------------------------------------
+=====================================
 
 Visit https://github.com/Pylons/pyramid_exclog to download development or
 tagged versions.

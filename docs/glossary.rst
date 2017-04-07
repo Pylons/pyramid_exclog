@@ -7,7 +7,7 @@ Glossary
    :sorted:
 
    Pyramid
-      A `web framework <http://pylonsproject.org>`_.
+      A `web framework <https://trypyramid.com>`_.
 
    tween
      A bit of code that sits between the Pyramid router's main request
