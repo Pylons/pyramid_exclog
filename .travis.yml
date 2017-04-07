@@ -1,18 +1,36 @@
-# Wire up travis
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 language: python
 
-python:
-  - 2.7
-  - pypy
-  - 3.3
-  - 3.4
-  - 3.5
-  - pypy3
+matrix:
+  include:
+    - python: '3.6'
+      env: TOXENV=py36
+    - python: '3.5'
+      env: TOXENV=py35
+    - python: '3.4'
+      env: TOXENV=py34
+    - python: '2.7'
+      env: TOXENV=py27
+    - python: '2.7'
+      env: TOXENV=py27-pyramid15
+    - python: '2.7'
+      env: TOXENV=py27-pyramid16
+    - python: '2.7'
+      env: TOXENV=py27-pyramid17
+    - python: '2.7'
+      env: TOXENV=py27-pyramid18
+    - python: 'pypy'
+      env: TOXENV=pypy
+    - python: '3.5'
+      env: TOXENV=py2-cover,py3-cover,coverage
+    - python: '3.5'
+      env: TOXENV=docs
 
-install: python setup.py -q dev
+install: pip install tox
 
-script: python setup.py -q test -q
-
-notifications:
-  email:
-    - pyramid-checkins@lists.repoze.org
+script: tox
