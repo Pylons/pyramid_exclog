@@ -7,7 +7,7 @@ applications, because the logger can be configured to log to a file, to UNIX
 syslog, to the Windows Event Log, or even to email.
 
 See the documentation at
-http://docs.pylonsproject.org/projects/pyramid_exclog/en/latest/ for more
+http://docs.pylonsproject.org/projects/pyramid-exclog/en/latest/ for more
 information.
 
 This package will only work with Pyramid 1.5 and better.

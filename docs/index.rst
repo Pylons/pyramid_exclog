@@ -361,10 +361,7 @@ tween chain is incorrect (see the output of ``ptweens``)::
 
 It usually belongs directly above the ``pyramid.tweens.excview_tween_factory``
 entry in the ``ptweens`` output, and will attempt to sort there by default as
-the result of having ``include('pyramid_exclog')`` invoked.
-
-Putting it above the ``pyramid.tweens.excview_tween_factory`` will cause it
-to log only exceptions that are not caught by an exception view.
+the result of having ``config.include('pyramid_exclog')`` invoked.
 
 Deployment under mod_wsgi
 =========================
