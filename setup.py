@@ -35,6 +35,7 @@ testing_extras = [
 docs_extras = [
     'Sphinx',
     'docutils',
+    'pylons-sphinx-themes',
     ]
 
 setup(name='pyramid_exclog',
@@ -48,9 +49,9 @@ setup(name='pyramid_exclog',
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "License :: Repoze Public License",

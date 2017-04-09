@@ -46,8 +46,9 @@ class Test_exclog_tween(unittest.TestCase):
             request = self.request
         if getLogger is None:
             getLogger = self.getLogger
+            registry.settings['exclog.getLogger'] = getLogger
         tween = exclog_tween_factory(handler, registry)
-        return tween(request, getLogger=getLogger)
+        return tween(request)
 
     def test_ignored(self):
         self.registry.settings['exclog.ignore'] = (NotImplementedError,)
@@ -56,6 +57,24 @@ class Test_exclog_tween(unittest.TestCase):
 
     def test_notignored(self):
         self.assertRaises(NotImplementedError, self._callFUT)
+        self.assertEqual(len(self.logger.exceptions), 1)
+        msg = self.logger.exceptions[0]
+        self.assertEqual(msg, repr(self.request.url))
+
+    def test_exc_info(self):
+        def handler(request):
+            try:
+                raise NotImplementedError
+            except Exception as ex:
+                exc_info = sys.exc_info()
+                try:
+                    request.exception = ex
+                    request.exc_info = exc_info
+                finally:
+                    del exc_info
+            return b'dummy response'
+        result = self._callFUT(handler=handler)
+        self.assertEqual(b'dummy response', result)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
         self.assertEqual(msg, repr(self.request.url))
@@ -231,19 +250,13 @@ class Test_includeme(unittest.TestCase):
         from pyramid.tweens import EXCVIEW
         config = DummyConfig()
         self._callFUT(config)
-        self.assertEqual(config.tweens,
-             [('pyramid_exclog.exclog_tween_factory', EXCVIEW, None)])
+        self.assertEqual(config.tweens, [(
+            'pyramid_exclog.exclog_tween_factory',
+            None,
+            [EXCVIEW, 'pyramid_tm.tm_tween_factory'],
+        )])
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (WSGIHTTPException,))
-
-    def test_it_catchall(self):
-        from pyramid.tweens import EXCVIEW
-        config = DummyConfig()
-        config.settings['exclog.catchall'] = 'true'
-        self._callFUT(config)
-        self.assertEqual(config.tweens,
-                   [('pyramid_exclog.exclog_tween_factory', EXCVIEW,
-                     None)])
 
     def test_it_withignored_builtin(self):
         config = DummyConfig()

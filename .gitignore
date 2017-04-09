@@ -9,7 +9,8 @@
 build/
 dist/
 .tox/
-nosetests.xml
+coverage*.xml
+nosetests*.xml
 pyramid_exclog/coverage.xml
 env26/
 env27/

@@ -1,7 +1,13 @@
 0.9 (unreleased)
 ----------------
 
-- TBD
+- Drop support for Python 3.3.
+
+- Require Pyramid 1.5+.
+
+- Move the tween **over** the ``EXCVIEW`` such that it also handles
+  exceptions caused by exception views.
+  See https://github.com/Pylons/pyramid_exclog/pull/32
 
 0.8 (2016-09-22)
 ----------------
