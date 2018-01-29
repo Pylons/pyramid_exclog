@@ -148,7 +148,7 @@ to start making use of ``pyramid_exclog``, you'll have to add an
 5) Add a section named ``[handler_exc_handler]`` with handler information
    related to the new exception logger.  In our example, it will have
    configuration that tells it to log to a file in the same directory as the
-   ``.ini`` file named ``exception.log``.
+   ``.ini`` file named ``exceptions.log``.
 
 6) Add a section named ``[formatter_exc_formatter]`` with message formatting
    information related to the messages sent to the ``exc_handler`` handler.
@@ -192,7 +192,7 @@ The resulting configuration will look like this:
 
    [handler_exc_handler]
    class = FileHandler
-   args = ('%(here)s/exception.log',)
+   args = ('%(here)s/exceptions.log',)
    level = ERROR
    formatter = exc_formatter
 
@@ -321,7 +321,7 @@ section of your Pyramid's ``.ini`` file.  These are:
 
    If ``exclog.extra_info`` is true the error message will also include
    the environ and params attributes of ``pyramid.request.Request`` formatted
-   using ``pprint.pformat()``. The output from 
+   using ``pprint.pformat()``. The output from
    ``pyramid.security.unauthenticated_id()`` is also included.
 
    This setting defaults to false
@@ -376,11 +376,11 @@ Here's an example of a ``run.wsgi`` file:
 
     import os
     from pyramid.paster import get_app, setup_logging
-    
+
     here = os.path.dirname(os.path.abspath(__file__))
     conf = os.path.join(here, 'production.ini')
     setup_logging(conf)
-    
+
     application = get_app(conf, 'main')
 
 More Information
