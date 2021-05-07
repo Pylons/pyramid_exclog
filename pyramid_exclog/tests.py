@@ -3,6 +3,7 @@ import sys
 import unittest
 from pyramid import testing
 
+
 class Test_exclog_tween_factory(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
@@ -19,9 +20,7 @@ class Test_exclog_tween_factory(unittest.TestCase):
 
 class Test_exclog_tween(unittest.TestCase):
     def setUp(self):
-        from pyramid.request import Request
-        request = Request.blank('/')
-        self.request = request
+        self.request = request = _request_factory('/')
         self.config = testing.setUp(request=request)
         self.registry = self.config.registry
         self.registry.settings = {}
@@ -120,7 +119,7 @@ class Test_exclog_tween(unittest.TestCase):
             @property
             def url(self):
                 raise bang
-        request = BadRequest.blank('/')
+        request = _request_factory('/', request_class=BadRequest)
         self.assertRaises(Exception, self._callFUT, request=request)
         msg = self.logger.exceptions[0]
         self.assertEqual('Exception while logging', msg)
@@ -129,7 +128,6 @@ class Test_exclog_tween(unittest.TestCase):
 
 
 class Test__get_url(unittest.TestCase):
-
     def _callFUT(self, request):
         from pyramid_exclog import _get_url
         return _get_url(request)
@@ -140,8 +138,7 @@ class Test__get_url(unittest.TestCase):
         self.assertEqual(self._callFUT(request), "'http://example.com'")
 
     def test_w_deocode_error_wo_qs(self):
-        from pyramid.request import Request
-        request = Request.blank('/')
+        request = _request_factory('/')
         request.environ['SCRIPT_NAME'] = '/script'
         request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
         self.assertEqual(self._callFUT(request),
@@ -149,8 +146,7 @@ class Test__get_url(unittest.TestCase):
                          r"'http://localhost/script/path/with/latin1/\x80'")
 
     def test_w_deocode_error_w_qs(self):
-        from pyramid.request import Request
-        request = Request.blank('/')
+        request = _request_factory('/')
         request.environ['SCRIPT_NAME'] = '/script'
         request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
         request.environ['QUERY_STRING'] = 'foo=bar'
@@ -161,14 +157,12 @@ class Test__get_url(unittest.TestCase):
 
 
 class Test__get_message(unittest.TestCase):
-
     def _callFUT(self, request):
         from pyramid_exclog import _get_message
         return _get_message(request)
 
     def test_evil_encodings(self):
-        from pyramid.request import Request
-        request = Request.blank('/%FA') # not utf-8
+        request = _request_factory('/%FA')  # not utf-8
         msg = self._callFUT(request)
         self.assertTrue("could not decode url: 'http://localhost/" in msg)
 
@@ -177,57 +171,52 @@ class Test__get_message(unittest.TestCase):
         # this, apparently is unicode or ascii-encoded bytes. Unfortunately,
         # unicode fails with some handlers if you do not set the encoding
         # on them.
-        from pyramid.request import Request
-        request = Request.blank('/url') # not utf-8
+        request = _request_factory('/url')  # not utf-8
         msg = self._callFUT(request)
         from pyramid_exclog import _text_type
         self.assertTrue(isinstance(msg, _text_type), repr(msg))
 
     def test_evil_encodings_extra_info(self):
-        from pyramid.request import Request
-        request = Request.blank('/url?%FA=%FA') # not utf-8
+        request = _request_factory('/url?%FA=%FA')  # not utf-8
         msg = self._callFUT(request)
         self.assertTrue("could not decode params" in msg, msg)
 
     def test_unicode_user_id_with_non_utf_8_url(self):
         # On Python 2 we may get a unicode userid while QUERY_STRING is a "str"
         # object containing non-ascii bytes.
-        from pyramid.request import Request
         with testing.testConfig() as config:
             config.testing_securitypolicy(userid=b'\xe6\xbc\xa2'.decode('utf-8'))
-            request = Request.blank('/')
+            request = _request_factory('/')
             request.environ['PATH_INFO'] = '/url'
             request.environ['QUERY_STRING'] = '\xfa=\xfa'
             msg = self._callFUT(request)
         self.assertTrue("could not decode params" in msg, msg)
 
     def test_non_ascii_bytes_in_userid(self):
-        from pyramid.request import Request
         byte_str = b'\xe6\xbc\xa2'
         with testing.testConfig() as config:
             config.testing_securitypolicy(userid=byte_str)
-            request = Request.blank('/')
+            request = _request_factory('/')
             msg = self._callFUT(request)
         self.assertTrue(repr(byte_str) in msg, msg)
 
     def test_integer_user_id(self):
         # userids can apparently be integers as well
-        from pyramid.request import Request
         with testing.testConfig() as config:
             config.testing_securitypolicy(userid=42)
-            request = Request.blank('/')
+            request = _request_factory('/')
             msg = self._callFUT(request)
         self.assertTrue('42' in msg)
 
     def test_evil_encodings_extra_info_POST(self):
-        from pyramid.request import Request
-        request = Request.blank('/url',
-                                content_type=
-                                    'application/x-www-form-urlencoded; '
-                                    'charset=utf-8',
-                                POST='%FA=%FA') # not utf-8
-        self._callFUT(request) # doesn't fail
-        
+        request = _request_factory(
+            '/url',
+            content_type=
+                'application/x-www-form-urlencoded; '
+                'charset=utf-8',
+            POST='%FA=%FA')  # not utf-8
+        self._callFUT(request)  # doesn't fail
+
     def test_io_error(self):
         from pyramid.request import Request
         bang = IOError('bang')
@@ -236,9 +225,10 @@ class Test__get_message(unittest.TestCase):
             def params(self):
                 raise bang
 
-        request = BadRequest.blank('/')
+        request = _request_factory('/', request_class=BadRequest)
         msg = self._callFUT(request)
         self.assertTrue("IOError while decoding params: bang" in msg, msg)
+
 
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
@@ -295,6 +285,7 @@ class Test_includeme(unittest.TestCase):
 class DummyException(object):
     pass
 
+
 class DummyLogger(object):
     def __init__(self):
         self.exceptions = []
@@ -308,6 +299,7 @@ class DummyLogger(object):
         self.exceptions.append(msg)
         self.exc_info.append(sys.exc_info())
 
+
 class DummyConfig(object):
     def __init__(self):
         self.tweens = []
@@ -320,3 +312,23 @@ class DummyConfig(object):
     def maybe_dotted(self, obj):
         """NOTE: ``obj`` should NOT be a dotted name."""
         return obj
+
+
+def _request_factory(*args, **kwargs):
+    """Construct a request object for testing
+
+    This will pass on any args and kwargs to the specified class instance.
+
+    :param request_class: Specific class to use to create the request object
+    :return: An instantiated version of the request class for testing
+    """
+    from pyramid.request import Request
+    from pyramid.threadlocal import get_current_registry
+
+    request = kwargs.pop("request_class", Request).blank(*args, **kwargs)
+
+    # Pyramid 2.0 does not appear to attach a registry by default which will
+    # lead to crashes we aren't looking for.
+    request.registry = get_current_registry()
+
+    return request
