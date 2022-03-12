@@ -1,5 +1,5 @@
 ``pyramid_exclog``
-===================
+==================
 
 A package which logs Pyramid application exception (error) information to a
 standard Python logger.  This add-on is most useful when used in production

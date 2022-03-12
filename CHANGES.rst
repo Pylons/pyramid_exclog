@@ -1,3 +1,16 @@
+unreleased
+----------
+
+- Support Python 3.7, 3.8, 3.9.
+  See https://github.com/Pylons/pyramid_exclog/pull/35
+
+- Add ``exclog.hide_cookies`` config option to mark certain
+  cookie values as hidden from messages.
+  See https://github.com/Pylons/pyramid_exclog/pull/39
+
+- Include the license file in the wheel.
+  See https://github.com/Pylons/pyramid_exclog/pull/37
+
 1.0 (2017-04-09)
 ----------------
 
