@@ -1,6 +1,8 @@
 unreleased
 ----------
 
+- Drop support for Python 2.7 and 3.5.
+
 - Support Python 3.7, 3.8, 3.9.
   See https://github.com/Pylons/pyramid_exclog/pull/35
 
@@ -10,6 +12,9 @@ unreleased
 
 - Include the license file in the wheel.
   See https://github.com/Pylons/pyramid_exclog/pull/37
+
+- Refactor source repo, blackify, and remove tests from package.
+  See https://github.com/Pylons/pyramid_exclog/pull/41
 
 1.0 (2017-04-09)
 ----------------
