@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 import unittest
 from pyramid import testing
@@ -97,18 +96,14 @@ class Test_exclog_tween(unittest.TestCase):
     def test_hidden_cookies(self):
         self.registry.settings['exclog.extra_info'] = True
         self.registry.settings['exclog.hidden_cookies'] = ['test_cookie']
-        request = _request_factory('/')
-        request.cookies['test_cookie'] = 'test_cookie_value'
-        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        self.request.cookies['test_cookie'] = 'test_cookie_value'
+        self.assertRaises(NotImplementedError, self._callFUT)
         msg = self.logger.exceptions[0]
         self.assertTrue('test_cookie=hidden' in msg, msg)
         self.assertFalse('test_cookie_value' in msg)
 
     def test_user_info_user(self):
-        from pyramid_exclog import _text_type
-        self.config.testing_securitypolicy(
-                userid=_text_type('hank'),
-                permissive=True)
+        self.config.testing_securitypolicy(userid='hank', permissive=True)
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
@@ -183,8 +178,7 @@ class Test__get_message(unittest.TestCase):
         # on them.
         request = _request_factory('/url')  # not utf-8
         msg = self._callFUT(request)
-        from pyramid_exclog import _text_type
-        self.assertTrue(isinstance(msg, _text_type), repr(msg))
+        self.assertTrue(isinstance(msg, str), repr(msg))
 
     def test_evil_encodings_extra_info(self):
         request = _request_factory('/url?%FA=%FA')  # not utf-8
@@ -267,7 +261,7 @@ class Test_includeme(unittest.TestCase):
 
     def test_it_withignored_nonbuiltin(self):
         config = DummyConfig()
-        config.settings['exclog.ignore'] ='pyramid_exclog.tests.DummyException'
+        config.settings['exclog.ignore'] ='tests.test_it.DummyException'
         self._callFUT(config)
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (DummyException,))

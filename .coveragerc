@@ -1,0 +1,15 @@
+[run]
+parallel = true
+source =
+    pyramid_exclog
+
+[paths]
+source =
+    src/pyramid_exclog
+    */src/pyramid_exclog
+    */site-packages/pyramid_exclog
+
+[report]
+show_missing = true
+precision = 2
+

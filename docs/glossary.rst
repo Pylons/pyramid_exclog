@@ -28,5 +28,5 @@ Glossary
 
    Logger
       A Python "standard library" ``logging`` module logger.  See
-      http://docs.python.org/library/logging.html for more information about
+      https://docs.python.org/library/logging.html for more information about
       Python standard library logging.
