@@ -97,9 +97,8 @@ class Test_exclog_tween(unittest.TestCase):
     def test_hidden_cookies(self):
         self.registry.settings['exclog.extra_info'] = True
         self.registry.settings['exclog.hidden_cookies'] = ['test_cookie']
-        request = _request_factory('/')
-        request.cookies['test_cookie'] = 'test_cookie_value'
-        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        self.request.cookies['test_cookie'] = 'test_cookie_value'
+        self.assertRaises(NotImplementedError, self._callFUT)
         msg = self.logger.exceptions[0]
         self.assertTrue('test_cookie=hidden' in msg, msg)
         self.assertFalse('test_cookie_value' in msg)
@@ -267,7 +266,7 @@ class Test_includeme(unittest.TestCase):
 
     def test_it_withignored_nonbuiltin(self):
         config = DummyConfig()
-        config.settings['exclog.ignore'] ='pyramid_exclog.tests.DummyException'
+        config.settings['exclog.ignore'] ='tests.test_it.DummyException'
         self._callFUT(config)
         self.assertEqual(config.registry.settings['exclog.ignore'],
                          (DummyException,))

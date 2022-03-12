@@ -32,7 +32,7 @@ extensions = [
 # Looks for pyramid's objects
 intersphinx_mapping = {
     'pyramid':
-    ('http://docs.pylonsproject.org/projects/pyramid/en/latest/', None)}
+    ('https://docs.pylonsproject.org/projects/pyramid/en/latest/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -45,7 +45,8 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'pyramid_exclog'
-copyright = '2011, Agendaless Consulting <chrism@plope.com>'
+thisyear = datetime.datetime.now().year
+copyright = '2011-%s, Agendaless Consulting <chrism@plope.com>' % thisyear
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

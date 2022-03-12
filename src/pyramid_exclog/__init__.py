@@ -73,6 +73,7 @@ def _hide_cookies(cookie_keys, request):
     """
 
     new_request = request.copy()
+    new_request.registry = request.registry
     cookies = new_request.cookies
 
     for key in cookie_keys:

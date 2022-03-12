@@ -28,7 +28,7 @@ If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
 
 .. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+.. _Python installation guide: https://docs.python-guide.org/en/latest/starting/installation/
 
 
 From sources
@@ -268,12 +268,12 @@ When the above configuration is used, exceptions will be sent via email
 instead of sent to a file.
 
 For information about logging in general see the `Pythong logging module
-documentation <http://docs.python.org/library/logging.html>`_.  Practical
+documentation <https://docs.python.org/library/logging.html>`_.  Practical
 tips are contained within the `Python logging cookbook
-<http://docs.python.org/howto/logging-cookbook.html#logging-cookbook>`_.
+<https://docs.python.org/howto/logging-cookbook.html#logging-cookbook>`_.
 More information about the the ``.ini`` logging file configuration format is
 at
-http://docs.python.org/library/logging.config.html#configuration-file-format
+https://docs.python.org/library/logging.config.html#configuration-file-format
 .
 
 Settings
