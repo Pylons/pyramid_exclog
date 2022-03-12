@@ -159,8 +159,7 @@ class Test__get_url(unittest.TestCase):
         request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
         self.assertEqual(
             self._callFUT(request),
-            r"could not decode url: "
-            + r"'http://localhost/script/path/with/latin1/\x80'",
+            r"could not decode url: 'http://localhost/script/path/with/latin1/\x80'",
         )
 
     def test_w_deocode_error_w_qs(self):
@@ -170,9 +169,8 @@ class Test__get_url(unittest.TestCase):
         request.environ['QUERY_STRING'] = 'foo=bar'
         self.assertEqual(
             self._callFUT(request),
-            r"could not decode url: "
-            + r"'http://localhost/script/path/with/latin1/\x80"
-            + r"?foo=bar'",
+            r"could not decode url: 'http://localhost/script/path/with/latin1/\x80"
+            r"?foo=bar'",
         )
 
 
@@ -233,7 +231,7 @@ class Test__get_message(unittest.TestCase):
     def test_evil_encodings_extra_info_POST(self):
         request = _request_factory(
             '/url',
-            content_type='application/x-www-form-urlencoded; ' 'charset=utf-8',
+            content_type='application/x-www-form-urlencoded; charset=utf-8',
             POST='%FA=%FA',
         )  # not utf-8
         self._callFUT(request)  # doesn't fail
