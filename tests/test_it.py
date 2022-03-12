@@ -1,6 +1,6 @@
+from pyramid import testing
 import sys
 import unittest
-from pyramid import testing
 
 
 class Test_exclog_tween_factory(unittest.TestCase):
@@ -10,6 +10,7 @@ class Test_exclog_tween_factory(unittest.TestCase):
 
     def _callFUT(self):
         from pyramid_exclog import exclog_tween_factory
+
         return exclog_tween_factory(None, self.registry)
 
     def test_no_recipients(self):
@@ -33,9 +34,11 @@ class Test_exclog_tween(unittest.TestCase):
     def handler(self, request):
         raise NotImplementedError
 
-    def _callFUT(self, handler=None, registry=None, request=None,
-                 getLogger=None):
+    def _callFUT(
+        self, handler=None, registry=None, request=None, getLogger=None
+    ):
         from pyramid_exclog import exclog_tween_factory
+
         if handler is None:
             handler = self.handler
         if registry is None:
@@ -71,6 +74,7 @@ class Test_exclog_tween(unittest.TestCase):
                 finally:
                     del exc_info
             return b'dummy response'
+
         result = self._callFUT(handler=handler)
         self.assertEqual(b'dummy response', result)
         self.assertEqual(len(self.logger.exceptions), 1)
@@ -82,7 +86,9 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0].strip()
-        self.assertTrue(msg.startswith("'http://localhost/'\n\nENVIRONMENT"), msg)
+        self.assertTrue(
+            msg.startswith("'http://localhost/'\n\nENVIRONMENT"), msg
+        )
         self.assertTrue("PARAMETERS\n\nNestedMultiDict([])" in msg)
         self.assertTrue('ENVIRONMENT' in msg)
 
@@ -119,11 +125,14 @@ class Test_exclog_tween(unittest.TestCase):
 
     def test_exception_while_logging(self):
         from pyramid.request import Request
+
         bang = AssertionError('bang')
+
         class BadRequest(Request):
             @property
             def url(self):
                 raise bang
+
         request = _request_factory('/', request_class=BadRequest)
         self.assertRaises(Exception, self._callFUT, request=request)
         msg = self.logger.exceptions[0]
@@ -135,10 +144,12 @@ class Test_exclog_tween(unittest.TestCase):
 class Test__get_url(unittest.TestCase):
     def _callFUT(self, request):
         from pyramid_exclog import _get_url
+
         return _get_url(request)
 
     def test_normal(self):
         from pyramid.testing import DummyRequest
+
         request = DummyRequest()
         self.assertEqual(self._callFUT(request), "'http://example.com'")
 
@@ -146,24 +157,27 @@ class Test__get_url(unittest.TestCase):
         request = _request_factory('/')
         request.environ['SCRIPT_NAME'] = '/script'
         request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
-        self.assertEqual(self._callFUT(request),
-                         r"could not decode url: " +
-                         r"'http://localhost/script/path/with/latin1/\x80'")
+        self.assertEqual(
+            self._callFUT(request),
+            r"could not decode url: 'http://localhost/script/path/with/latin1/\x80'",
+        )
 
     def test_w_deocode_error_w_qs(self):
         request = _request_factory('/')
         request.environ['SCRIPT_NAME'] = '/script'
         request.environ['PATH_INFO'] = '/path/with/latin1/\x80'
         request.environ['QUERY_STRING'] = 'foo=bar'
-        self.assertEqual(self._callFUT(request),
-                         r"could not decode url: " +
-                         r"'http://localhost/script/path/with/latin1/\x80" +
-                         r"?foo=bar'")
+        self.assertEqual(
+            self._callFUT(request),
+            r"could not decode url: 'http://localhost/script/path/with/latin1/\x80"
+            r"?foo=bar'",
+        )
 
 
 class Test__get_message(unittest.TestCase):
     def _callFUT(self, request):
         from pyramid_exclog import _get_message
+
         return _get_message(request)
 
     def test_evil_encodings(self):
@@ -189,7 +203,9 @@ class Test__get_message(unittest.TestCase):
         # On Python 2 we may get a unicode userid while QUERY_STRING is a "str"
         # object containing non-ascii bytes.
         with testing.testConfig() as config:
-            config.testing_securitypolicy(userid=b'\xe6\xbc\xa2'.decode('utf-8'))
+            config.testing_securitypolicy(
+                userid=b'\xe6\xbc\xa2'.decode('utf-8')
+            )
             request = _request_factory('/')
             request.environ['PATH_INFO'] = '/url'
             request.environ['QUERY_STRING'] = '\xfa=\xfa'
@@ -215,15 +231,16 @@ class Test__get_message(unittest.TestCase):
     def test_evil_encodings_extra_info_POST(self):
         request = _request_factory(
             '/url',
-            content_type=
-                'application/x-www-form-urlencoded; '
-                'charset=utf-8',
-            POST='%FA=%FA')  # not utf-8
+            content_type='application/x-www-form-urlencoded; charset=utf-8',
+            POST='%FA=%FA',
+        )  # not utf-8
         self._callFUT(request)  # doesn't fail
 
     def test_io_error(self):
         from pyramid.request import Request
+
         bang = IOError('bang')
+
         class BadRequest(Request):
             @property
             def params(self):
@@ -237,34 +254,44 @@ class Test__get_message(unittest.TestCase):
 class Test_includeme(unittest.TestCase):
     def _callFUT(self, config):
         from pyramid_exclog import includeme
+
         return includeme(config)
 
     def test_it(self):
         from pyramid.httpexceptions import WSGIHTTPException
         from pyramid.tweens import EXCVIEW
+
         config = DummyConfig()
         self._callFUT(config)
-        self.assertEqual(config.tweens, [(
-            'pyramid_exclog.exclog_tween_factory',
-            None,
-            [EXCVIEW, 'pyramid_tm.tm_tween_factory'],
-        )])
-        self.assertEqual(config.registry.settings['exclog.ignore'],
-                         (WSGIHTTPException,))
+        self.assertEqual(
+            config.tweens,
+            [
+                (
+                    'pyramid_exclog.exclog_tween_factory',
+                    None,
+                    [EXCVIEW, 'pyramid_tm.tm_tween_factory'],
+                )
+            ],
+        )
+        self.assertEqual(
+            config.registry.settings['exclog.ignore'], (WSGIHTTPException,)
+        )
 
     def test_it_withignored_builtin(self):
         config = DummyConfig()
         config.settings['exclog.ignore'] = 'NotImplementedError'
         self._callFUT(config)
-        self.assertEqual(config.registry.settings['exclog.ignore'],
-                         (NotImplementedError,))
+        self.assertEqual(
+            config.registry.settings['exclog.ignore'], (NotImplementedError,)
+        )
 
     def test_it_withignored_nonbuiltin(self):
         config = DummyConfig()
-        config.settings['exclog.ignore'] ='tests.test_it.DummyException'
+        config.settings['exclog.ignore'] = 'tests.test_it.DummyException'
         self._callFUT(config)
-        self.assertEqual(config.registry.settings['exclog.ignore'],
-                         (DummyException,))
+        self.assertEqual(
+            config.registry.settings['exclog.ignore'], (DummyException,)
+        )
 
     def test_it_with_extra_info(self):
         config = DummyConfig()
@@ -274,11 +301,12 @@ class Test_includeme(unittest.TestCase):
 
     def test_it_with_get_message(self):
         config = DummyConfig()
-        get_message = lambda req: 'MESSAGE'
+        get_message = lambda req: 'MESSAGE'  # noqa E722
         config.settings['exclog.get_message'] = get_message
         self._callFUT(config)
-        self.assertEqual(config.registry.settings['exclog.get_message'],
-                         get_message)
+        self.assertEqual(
+            config.registry.settings['exclog.get_message'], get_message
+        )
 
     def test_get_message_not_set_by_includeme(self):
         config = DummyConfig()
