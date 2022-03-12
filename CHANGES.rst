@@ -3,7 +3,7 @@ unreleased
 
 - Drop support for Python 2.7 and 3.5.
 
-- Support Python 3.7, 3.8, 3.9.
+- Support Python 3.7, 3.8, 3.9, 3.10.
   See https://github.com/Pylons/pyramid_exclog/pull/35
 
 - Add ``exclog.hide_cookies`` config option to mark certain
