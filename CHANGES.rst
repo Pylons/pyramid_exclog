@@ -1,7 +1,7 @@
 unreleased
 ----------
 
-- Drop support for Python 2.7 and 3.5.
+- Drop support for Python 2.7, 3.5, and 3.6.
 
 - Support Python 3.7, 3.8, 3.9, 3.10.
   See https://github.com/Pylons/pyramid_exclog/pull/35

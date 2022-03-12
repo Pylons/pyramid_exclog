@@ -15,7 +15,6 @@ jobs:
         strategy:
             matrix:
                 py:
-                    - "3.6"
                     - "3.7"
                     - "3.8"
                     - "3.9"
@@ -48,32 +47,32 @@ jobs:
             - run: pip install tox
             - name: Running tox
               run: tox -e py
-    test-py36-pyramid15:
+    test-py37-pyramid15:
         runs-on: ubuntu-latest
-        name: "Python: 3.6-x64 on ubuntu-latest with Pyramid 1.5"
+        name: "Python: 3.7-x64 on ubuntu-latest with Pyramid 1.5"
         steps:
             - uses: actions/checkout@v2
             - name: Setup python
               uses: actions/setup-python@v2
               with:
-                  python-version: 3.6
+                  python-version: "3.7"
                   architecture: x64
             - run: pip install tox
             - name: Running tox
-              run: tox -e py36-pyramid15
-    test-py36-pyramid110:
+              run: tox -e py37-pyramid15
+    test-py37-pyramid110:
         runs-on: ubuntu-latest
-        name: "Python: 3.6-x64 on ubuntu-latest with Pyramid 1.10"
+        name: "Python: 3.7-x64 on ubuntu-latest with Pyramid 1.10"
         steps:
             - uses: actions/checkout@v2
             - name: Setup python
               uses: actions/setup-python@v2
               with:
-                  python-version: 3.6
+                  python-version: "3.7"
                   architecture: x64
             - run: pip install tox
             - name: Running tox
-              run: tox -e py36-pyramid110
+              run: tox -e py37-pyramid110
     coverage:
         runs-on: ubuntu-latest
         name: Validate coverage
@@ -82,7 +81,7 @@ jobs:
             - name: Setup python
               uses: actions/setup-python@v2
               with:
-                  python-version: 3.10
+                  python-version: "3.10"
                   architecture: x64
 
             - run: pip install tox
@@ -95,7 +94,7 @@ jobs:
             - name: Setup python
               uses: actions/setup-python@v2
               with:
-                  python-version: 3.10
+                  python-version: "3.10"
                   architecture: x64
             - run: pip install tox
             - run: tox -e docs
@@ -107,7 +106,7 @@ jobs:
     #         - name: Setup python
     #           uses: actions/setup-python@v2
     #           with:
-    #               python-version: 3.10
+    #               python-version: "3.10"
     #               architecture: x64
     #         - run: pip install tox
     #         - run: tox -e lint
