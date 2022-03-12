@@ -17,6 +17,7 @@
 # make it absolute, like shown here.
 #sys.path.append(os.path.abspath('some/directory'))
 
+import datetime
 import sys, os
 
 # General configuration
