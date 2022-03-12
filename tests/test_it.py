@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 import unittest
 from pyramid import testing
@@ -104,10 +103,7 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertFalse('test_cookie_value' in msg)
 
     def test_user_info_user(self):
-        from pyramid_exclog import _text_type
-        self.config.testing_securitypolicy(
-                userid=_text_type('hank'),
-                permissive=True)
+        self.config.testing_securitypolicy(userid='hank', permissive=True)
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
@@ -182,8 +178,7 @@ class Test__get_message(unittest.TestCase):
         # on them.
         request = _request_factory('/url')  # not utf-8
         msg = self._callFUT(request)
-        from pyramid_exclog import _text_type
-        self.assertTrue(isinstance(msg, _text_type), repr(msg))
+        self.assertTrue(isinstance(msg, str), repr(msg))
 
     def test_evil_encodings_extra_info(self):
         request = _request_factory('/url?%FA=%FA')  # not utf-8

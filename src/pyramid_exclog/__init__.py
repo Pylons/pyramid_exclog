@@ -1,3 +1,4 @@
+import builtins
 import sys
 from pprint import pformat
 
@@ -9,24 +10,13 @@ from pyramid.httpexceptions import WSGIHTTPException
 
 resolver = DottedNameResolver(None)
 
-PY3 = sys.version_info[0] == 3
-
-if PY3: # pragma: no cover
-    import builtins
-    _text_type = str
-else:
-    import __builtin__ as builtins
-    _text_type = unicode
 
 def as_globals_list(value):
     L = []
     value = aslist(value)
     for dottedname in value:
         if dottedname in builtins.__dict__:
-            if PY3: # pragma: no cover
-                dottedname = 'builtins.%s' % dottedname
-            else:
-                dottedname = '__builtin__.%s' % dottedname
+            dottedname = 'builtins.%s' % dottedname
         obj = resolver.maybe_resolve(dottedname)
         L.append(obj)
     return L
@@ -43,10 +33,9 @@ def _get_url(request):
         if qs:
             url += '?' + qs
         url = 'could not decode url: %r' % url
-    url = _text_type(url)
     return url
 
-_MESSAGE_TEMPLATE = _text_type("""
+_MESSAGE_TEMPLATE = """
 
 %(url)s
 
@@ -64,7 +53,7 @@ UNAUTHENTICATED USER
 
 %(usr)s
 
-""")
+"""
 
 def _hide_cookies(cookie_keys, request):
     """
@@ -104,7 +93,7 @@ def _get_message(request):
     except IOError as ex:
         params = 'IOError while decoding params: %s' % ex
 
-    if not isinstance(unauth, _text_type):
+    if not isinstance(unauth, str):
         unauth = repr(unauth)
 
     return _MESSAGE_TEMPLATE % dict(
