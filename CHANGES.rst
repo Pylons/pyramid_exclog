@@ -1,5 +1,5 @@
-unreleased
-----------
+1.1 (2022-03-12)
+----------------
 
 - Drop support for Python 2.7, 3.5, and 3.6.
 
