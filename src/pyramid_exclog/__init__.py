@@ -1,12 +1,10 @@
 import builtins
-import sys
 from pprint import pformat
-
-import pyramid.tweens
-from pyramid.settings import aslist
-from pyramid.settings import asbool
-from pyramid.util import DottedNameResolver
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.settings import asbool, aslist
+import pyramid.tweens
+from pyramid.util import DottedNameResolver
+import sys
 
 resolver = DottedNameResolver(None)
 
@@ -21,19 +19,23 @@ def as_globals_list(value):
         L.append(obj)
     return L
 
+
 def _get_url(request):
     try:
         url = repr(request.url)
     except UnicodeDecodeError:
         # do the best we can
-        url = (request.host_url +
-               request.environ.get('SCRIPT_NAME') +
-               request.environ.get('PATH_INFO'))
+        url = (
+            request.host_url
+            + request.environ.get('SCRIPT_NAME')
+            + request.environ.get('PATH_INFO')
+        )
         qs = request.environ.get('QUERY_STRING')
         if qs:
             url += '?' + qs
         url = 'could not decode url: %r' % url
     return url
+
 
 _MESSAGE_TEMPLATE = """
 
@@ -55,6 +57,7 @@ UNAUTHENTICATED USER
 
 """
 
+
 def _hide_cookies(cookie_keys, request):
     """
     Return a copy of the request with the specified cookies' values replaced
@@ -74,6 +77,7 @@ def _hide_cookies(cookie_keys, request):
     len(cookies)
 
     return new_request
+
 
 def _get_message(request):
     """
@@ -97,10 +101,12 @@ def _get_message(request):
         unauth = repr(unauth)
 
     return _MESSAGE_TEMPLATE % dict(
-            url=url,
-            env=pformat(request.environ),
-            params=pformat(params),
-            usr=unauth)
+        url=url,
+        env=pformat(request.environ),
+        params=pformat(params),
+        usr=unauth,
+    )
+
 
 class ErrorHandler(object):
     def __init__(self, ignored, getLogger, get_message, hidden_cookies=()):
@@ -125,8 +131,9 @@ class ErrorHandler(object):
             logger = self.getLogger('exc_logger')
             message = self.get_message(request)
             logger.error(message, exc_info=exc_info)
-        except:
+        except BaseException:
             logger.exception("Exception while logging")
+
 
 def exclog_tween_factory(handler, registry):
     get = registry.settings.get
@@ -142,7 +149,8 @@ def exclog_tween_factory(handler, registry):
     getLogger = resolver.maybe_resolve(getLogger)
 
     handle_error = ErrorHandler(
-        ignored, getLogger, get_message, hidden_cookies=hidden_cookies)
+        ignored, getLogger, get_message, hidden_cookies=hidden_cookies
+    )
 
     def exclog_tween(request):
         try:
@@ -152,10 +160,12 @@ def exclog_tween_factory(handler, registry):
                 handle_error(request, exc_info)
             return response
 
-        except:
+        except BaseException:
             handle_error(request)
             raise
+
     return exclog_tween
+
 
 def includeme(config):
     """
@@ -172,10 +182,12 @@ def includeme(config):
 
     """
     get = config.registry.settings.get
-    ignored = as_globals_list(get(
-        'exclog.ignore',
-        'pyramid.httpexceptions.WSGIHTTPException',
-    ))
+    ignored = as_globals_list(
+        get(
+            'exclog.ignore',
+            'pyramid.httpexceptions.WSGIHTTPException',
+        )
+    )
     extra_info = asbool(get('exclog.extra_info', False))
     hidden_cookies = aslist(get('exclog.hidden_cookies', ''))
     get_message = get('exclog.get_message', None)
@@ -185,9 +197,12 @@ def includeme(config):
     config.registry.settings['exclog.ignore'] = tuple(ignored)
     config.registry.settings['exclog.extra_info'] = extra_info
     config.registry.settings['exclog.hidden_cookies'] = hidden_cookies
-    config.add_tween('pyramid_exclog.exclog_tween_factory', over=[
-        pyramid.tweens.EXCVIEW,
-        # if pyramid_tm is in the pipeline we want to track errors caused
-        # by commit/abort so we try to place ourselves over it
-        'pyramid_tm.tm_tween_factory',
-    ])
+    config.add_tween(
+        'pyramid_exclog.exclog_tween_factory',
+        over=[
+            pyramid.tweens.EXCVIEW,
+            # if pyramid_tm is in the pipeline we want to track errors caused
+            # by commit/abort so we try to place ourselves over it
+            'pyramid_tm.tm_tween_factory',
+        ],
+    )
