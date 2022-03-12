@@ -347,6 +347,25 @@ section of your Pyramid's ``.ini`` file.  These are:
 
    If ``exclog.get_message`` is set, ``exclog.extra_info`` will be ignored.
 
+``exclog.hidden_cookies``
+
+   A list of keys of cookies to hide in the error message.  The cookie's value
+   will be replaced with "hidden", so you can still tell whether the cookie was
+   present.
+
+   This works with either ``exclog.extra_info`` or ``exclog.get_message``.  If
+   ``exclog.hidden_cookies`` is set, then any function specified in
+   ``exclog.get_message`` will receive a copy of the request with the cookies
+   already replaced.
+
+   An example:
+
+   .. code-block:: ini
+
+      [app:myapp]
+      exclog.hidden_cookies = auth_tkt
+                              another_cookie
+
 Explicit "Tween" Configuration
 ==============================
 

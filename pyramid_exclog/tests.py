@@ -94,6 +94,16 @@ class Test_exclog_tween(unittest.TestCase):
         msg = self.logger.exceptions[0]
         self.assertEqual(msg, 'MESSAGE')
 
+    def test_hidden_cookies(self):
+        self.registry.settings['exclog.extra_info'] = True
+        self.registry.settings['exclog.hidden_cookies'] = ['test_cookie']
+        request = _request_factory('/')
+        request.cookies['test_cookie'] = 'test_cookie_value'
+        self.assertRaises(NotImplementedError, self._callFUT, request=request)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('test_cookie=hidden' in msg, msg)
+        self.assertFalse('test_cookie_value' in msg)
+
     def test_user_info_user(self):
         from pyramid_exclog import _text_type
         self.config.testing_securitypolicy(

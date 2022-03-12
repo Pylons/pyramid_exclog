@@ -66,6 +66,25 @@ UNAUTHENTICATED USER
 
 """)
 
+def _hide_cookies(cookie_keys, request):
+    """
+    Return a copy of the request with the specified cookies' values replaced
+    with "hidden", if present.
+    """
+
+    new_request = request.copy()
+    cookies = new_request.cookies
+
+    for key in cookie_keys:
+        if key in cookies:
+            cookies[key] = 'hidden'
+
+    # This forces the cookie handler to update its parsed cookies cache, which
+    # also ends up in the environ dump
+    len(cookies)
+
+    return new_request
+
 def _get_message(request):
     """
     Return a string with useful information from the request.
@@ -94,10 +113,11 @@ def _get_message(request):
             usr=unauth)
 
 class ErrorHandler(object):
-    def __init__(self, ignored, getLogger, get_message):
+    def __init__(self, ignored, getLogger, get_message, hidden_cookies=()):
         self.ignored = ignored
         self.getLogger = getLogger
         self.get_message = get_message
+        self.hidden_cookies = hidden_cookies
 
     def __call__(self, request, exc_info=None):
         # save the traceback as it may get lost when we get the message.
@@ -109,6 +129,9 @@ class ErrorHandler(object):
         if isinstance(exc_info[1], self.ignored):
             return
         try:
+            if self.hidden_cookies:
+                request = _hide_cookies(self.hidden_cookies, request)
+
             logger = self.getLogger('exc_logger')
             message = self.get_message(request)
             logger.error(message, exc_info=exc_info)
@@ -123,11 +146,13 @@ def exclog_tween_factory(handler, registry):
     if get('exclog.extra_info', False):
         get_message = _get_message
     get_message = get('exclog.get_message', get_message)
+    hidden_cookies = get('exclog.hidden_cookies', ())
 
     getLogger = get('exclog.getLogger', 'logging.getLogger')
     getLogger = resolver.maybe_resolve(getLogger)
 
-    handle_error = ErrorHandler(ignored, getLogger, get_message)
+    handle_error = ErrorHandler(
+        ignored, getLogger, get_message, hidden_cookies=hidden_cookies)
 
     def exclog_tween(request):
         try:
@@ -162,12 +187,14 @@ def includeme(config):
         'pyramid.httpexceptions.WSGIHTTPException',
     ))
     extra_info = asbool(get('exclog.extra_info', False))
+    hidden_cookies = aslist(get('exclog.hidden_cookies', ''))
     get_message = get('exclog.get_message', None)
     if get_message is not None:
         get_message = config.maybe_dotted(get_message)
         config.registry.settings['exclog.get_message'] = get_message
     config.registry.settings['exclog.ignore'] = tuple(ignored)
     config.registry.settings['exclog.extra_info'] = extra_info
+    config.registry.settings['exclog.hidden_cookies'] = hidden_cookies
     config.add_tween('pyramid_exclog.exclog_tween_factory', over=[
         pyramid.tweens.EXCVIEW,
         # if pyramid_tm is in the pipeline we want to track errors caused
