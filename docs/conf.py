@@ -41,7 +41,7 @@ templates_path = ['.templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
-# The master toctree document.
+# The main toctree document.
 master_doc = 'index'
 
 # General substitutions.
