@@ -106,3 +106,4 @@ Contributors
 - Marco Falcioni, 2016/09/21
 - Jon Betts, 2021/04/19
 - Lynn Vaughan, 2022/02/22
+- Jonathan Vanasco, 2022/11/15
