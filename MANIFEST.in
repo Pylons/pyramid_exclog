@@ -12,6 +12,7 @@ include CHANGES.rst
 
 include setup.cfg pyproject.toml
 include .coveragerc .flake8
+include .mailmap
 include tox.ini rtd.txt
 
 recursive-exclude * __pycache__ *.py[cod]
