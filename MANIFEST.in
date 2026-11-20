@@ -1,18 +1,17 @@
-graft src/pyramid_tm
+graft src/pyramid_exclog
 graft tests
 graft docs
 graft .github
 
 include README.rst
-include CHANGES.rst
 include LICENSE.txt
 include CONTRIBUTORS.txt
 include COPYRIGHT.txt
 include CHANGES.rst
 
-include setup.cfg pyproject.toml
+include pyproject.toml
 include .coveragerc .flake8
 include .mailmap
-include tox.ini rtd.txt
+include tox.ini .readthedocs.yaml
 
 recursive-exclude * __pycache__ *.py[cod]

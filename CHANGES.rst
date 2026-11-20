@@ -1,7 +1,20 @@
-Unreleased (2022-11-15)
------------------------
+unreleased
+----------
 
 - Rename "master" to "main"
+
+- Drop support for Python 3.7, 3.8, 3.9, and 3.10.
+
+- Add support for Python 3.11, 3.12, 3.13, 3.14, and 3.15.
+
+- Avoid deprecation warnings by using the public api for
+  ``pyramid.path.DottedNameResolver``.
+
+- Stop using the deprecated ``pkg_resources`` api in the docs.
+
+- Switch packaging metadata from ``setup.cfg`` to ``pyproject.toml`` and use
+  an SPDX license expression. The ``testing`` and ``docs`` extras are replaced
+  by dependency groups.
 
 1.1 (2022-03-12)
 ----------------
