@@ -1,9 +1,9 @@
 import builtins
 from pprint import pformat
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.path import DottedNameResolver
 from pyramid.settings import asbool, aslist
 import pyramid.tweens
-from pyramid.util import DottedNameResolver
 import sys
 
 resolver = DottedNameResolver(None)
