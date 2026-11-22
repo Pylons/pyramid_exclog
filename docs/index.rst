@@ -410,6 +410,7 @@ More Information
 
    api.rst
    glossary.rst
+   changes.rst
 
 
 Reporting Bugs / Development Versions
