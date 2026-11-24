@@ -103,7 +103,7 @@ testpaths = [
 
 [tool.coverage.run]
 parallel = true
-source = ["pyramid_exclog"]
+source = ["pyramid_exclog", "tests"]
 
 [tool.coverage.paths]
 source = [
