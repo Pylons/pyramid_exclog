@@ -74,7 +74,7 @@ def _hide_cookies(cookie_keys, request):
 
     # This forces the cookie handler to update its parsed cookies cache, which
     # also ends up in the environ dump
-    len(cookies)
+    len(cookies)  # noqa: B018
 
     return new_request
 
@@ -131,7 +131,7 @@ class ErrorHandler(object):
             logger = self.getLogger('exc_logger')
             message = self.get_message(request)
             logger.error(message, exc_info=exc_info)
-        except BaseException:
+        except BaseException:  # noqa: B036
             logger.exception("Exception while logging")
 
 
