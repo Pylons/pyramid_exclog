@@ -101,6 +101,21 @@ testpaths = [
   "tests",
 ]
 
+[tool.coverage.run]
+parallel = true
+source = ["pyramid_exclog"]
+
+[tool.coverage.paths]
+source = [
+  "src/pyramid_exclog",
+  "*/src/pyramid_exclog",
+  "*/site-packages/pyramid_exclog",
+]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
