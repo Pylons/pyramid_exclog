@@ -1,6 +1,11 @@
 unreleased
 ----------
 
+- Stop using the deprecated ``request.unauthenticated_userid``. The
+  unauthenticated userid is now read from the authentication policy directly.
+  When no authentication policy is configured, including when a Pyramid 2.0
+  security policy is used, the ``UNAUTHENTICATED USER`` section is omitted from
+  the ``exclog.extra_info`` output instead of logging ``None``.
 
 1.2 (2026-11-21)
 ----------------

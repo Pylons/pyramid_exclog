@@ -1,6 +1,7 @@
 import builtins
 from pprint import pformat
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.interfaces import IAuthenticationPolicy
 from pyramid.path import DottedNameResolver
 from pyramid.settings import asbool, aslist
 import pyramid.tweens
@@ -50,7 +51,9 @@ PARAMETERS
 
 %(params)s
 
+"""
 
+_USER_TEMPLATE = """
 UNAUTHENTICATED USER
 
 %(usr)s
@@ -88,7 +91,6 @@ def _get_message(request):
 
     """
     url = _get_url(request)
-    unauth = request.unauthenticated_userid
 
     try:
         params = request.params
@@ -97,15 +99,22 @@ def _get_message(request):
     except IOError as ex:
         params = 'IOError while decoding params: %s' % ex
 
-    if not isinstance(unauth, str):
-        unauth = repr(unauth)
-
-    return _MESSAGE_TEMPLATE % dict(
+    message = _MESSAGE_TEMPLATE % dict(
         url=url,
         env=pformat(request.environ),
         params=pformat(params),
-        usr=unauth,
     )
+
+    # request.unauthenticated_userid is deprecated in pyramid 2.0, so ask the
+    # legacy authentication policy directly and omit the user if there is none
+    authn_policy = request.registry.queryUtility(IAuthenticationPolicy)
+    if authn_policy is not None:
+        unauth = authn_policy.unauthenticated_userid(request)
+        if not isinstance(unauth, str):
+            unauth = repr(unauth)
+        message += _USER_TEMPLATE % dict(usr=unauth)
+
+    return message
 
 
 class ErrorHandler(object):

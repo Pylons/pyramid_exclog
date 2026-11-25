@@ -321,8 +321,10 @@ section of your Pyramid's ``.ini`` file.  These are:
 
    If ``exclog.extra_info`` is true the error message will also include
    the environ and params attributes of ``pyramid.request.Request`` formatted
-   using ``pprint.pformat()``. The output from
-   ``pyramid.security.unauthenticated_id()`` is also included.
+   using ``pprint.pformat()``. If an :term:`authentication policy` is
+   configured, its unauthenticated userid is also included. Pyramid 2.0
+   security policies do not have an unauthenticated userid, so it is omitted
+   when one is used.
 
    This setting defaults to false
 
