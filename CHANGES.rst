@@ -1,5 +1,5 @@
-unreleased
-----------
+1.3 (2026-11-24)
+------------------
 
 - Stop using the deprecated ``request.unauthenticated_userid``. The
   unauthenticated userid is now read from the authentication policy directly.

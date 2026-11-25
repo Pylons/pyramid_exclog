@@ -1,6 +1,6 @@
 [project]
 name = "pyramid_exclog"
-version = "1.3.dev0"
+version = "1.3"
 description = "A package which logs to a Python logger when an exception is raised by a Pyramid application"
 dynamic = ["readme"]
 
