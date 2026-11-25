@@ -1,4 +1,5 @@
 from pyramid import testing
+from pyramid.interfaces import IAuthenticationPolicy
 import sys
 import unittest
 
@@ -109,19 +110,35 @@ class Test_exclog_tween(unittest.TestCase):
         self.assertFalse('test_cookie_value' in msg)
 
     def test_user_info_user(self):
-        self.config.testing_securitypolicy(userid='hank', permissive=True)
+        _register_authn_policy(self.config, 'hank')
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
         self.assertTrue('UNAUTHENTICATED USER\n\nhank' in msg, msg)
 
-    def test_user_info_no_user(self):
+    def test_user_info_security_policy(self):
+        # pyramid 2.0 security policies have no unauthenticated userid
+        self.config.testing_securitypolicy(userid='hank', permissive=True)
+        self.config.registry.unregisterUtility(provided=IAuthenticationPolicy)
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT)
+        msg = self.logger.exceptions[0]
+        self.assertFalse('UNAUTHENTICATED USER' in msg, msg)
+
+    def test_user_info_anonymous(self):
+        _register_authn_policy(self.config, None)
+        self.registry.settings['exclog.extra_info'] = True
+        self.assertRaises(NotImplementedError, self._callFUT)
+        msg = self.logger.exceptions[0]
+        self.assertTrue('UNAUTHENTICATED USER\n\nNone\n' in msg, msg)
+
+    def test_user_info_no_authn_policy(self):
         self.registry.settings['exclog.extra_info'] = True
         self.assertRaises(NotImplementedError, self._callFUT)
         self.assertEqual(len(self.logger.exceptions), 1)
         msg = self.logger.exceptions[0]
-        self.assertTrue('UNAUTHENTICATED USER\n\nNone\n' in msg, msg)
+        self.assertFalse('UNAUTHENTICATED USER' in msg, msg)
 
     def test_exception_while_logging(self):
         from pyramid.request import Request
@@ -203,9 +220,7 @@ class Test__get_message(unittest.TestCase):
         # On Python 2 we may get a unicode userid while QUERY_STRING is a "str"
         # object containing non-ascii bytes.
         with testing.testConfig() as config:
-            config.testing_securitypolicy(
-                userid=b'\xe6\xbc\xa2'.decode('utf-8')
-            )
+            _register_authn_policy(config, b'\xe6\xbc\xa2'.decode('utf-8'))
             request = _request_factory('/')
             request.environ['PATH_INFO'] = '/url'
             request.environ['QUERY_STRING'] = '\xfa=\xfa'
@@ -215,7 +230,7 @@ class Test__get_message(unittest.TestCase):
     def test_non_ascii_bytes_in_userid(self):
         byte_str = b'\xe6\xbc\xa2'
         with testing.testConfig() as config:
-            config.testing_securitypolicy(userid=byte_str)
+            _register_authn_policy(config, byte_str)
             request = _request_factory('/')
             msg = self._callFUT(request)
         self.assertTrue(repr(byte_str) in msg, msg)
@@ -223,7 +238,7 @@ class Test__get_message(unittest.TestCase):
     def test_integer_user_id(self):
         # userids can apparently be integers as well
         with testing.testConfig() as config:
-            config.testing_securitypolicy(userid=42)
+            _register_authn_policy(config, 42)
             request = _request_factory('/')
             msg = self._callFUT(request)
         self.assertTrue('42' in msg)
@@ -364,3 +379,17 @@ def _request_factory(*args, **kwargs):
     request.registry = get_current_registry()
 
     return request
+
+
+class DummyAuthenticationPolicy:
+    def __init__(self, userid):
+        self.userid = userid
+
+    def unauthenticated_userid(self, request):
+        return self.userid
+
+
+def _register_authn_policy(config, userid):
+    config.registry.registerUtility(
+        DummyAuthenticationPolicy(userid), IAuthenticationPolicy
+    )
